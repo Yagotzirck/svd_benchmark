@@ -64,13 +64,8 @@ Q_diag = diag(Q);
 Q_subdiag = diag(Q,-1);
 
 % Calculate diagonal elements
-A_diag = zeros(n,1);
-
-A_diag(1:n-1) = ...
-    R_diag(1:n-1) .* Q_diag(1:n-1) + ...
-    R_superdiag .* Q_subdiag;
-
-A_diag(n) = R_diag(n) * Q_diag(n);
+A_diag = R_diag .* Q_diag;
+A_diag(1:n-1) = A_diag(1:n-1) + R_superdiag .* Q_subdiag;
 
 % Calculate subdiagonal and superdiagonal elements (they're the same)
 A_subdiag = R_diag(2:n) .* Q_subdiag;
