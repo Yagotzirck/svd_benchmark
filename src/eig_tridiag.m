@@ -68,12 +68,12 @@ A_diag = zeros(n,1);
 
 A_diag(1:n-1) = ...
     R_diag(1:n-1) .* Q_diag(1:n-1) + ...
-    R_superdiag(1:n-1) .* Q_subdiag(1:n-1);
+    R_superdiag .* Q_subdiag;
 
 A_diag(n) = R_diag(n) * Q_diag(n);
 
 % Calculate subdiagonal and superdiagonal elements (they're the same)
-A_subdiag = R_diag(2:end) .* Q_subdiag;
+A_subdiag = R_diag(2:n) .* Q_subdiag;
 
 % Combine the three diagonals to build the tridiagonal matrix
 % for the next QR iteration
