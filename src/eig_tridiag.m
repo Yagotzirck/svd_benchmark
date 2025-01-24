@@ -13,11 +13,14 @@ function [U,e] = eig_tridiag(A, tau)
 %
 %   The function returns:
 %       U   - A matrix whose columns are the eigenvectors of A.
-%             The eigenvectors corresponding to the non-zero eigenvalues
-%             are expected to be orthonormal; however,
+%             The eigenvectors corresponding to the non-zero and unique
+%             eigenvalues are expected to be orthonormal; however,
 %             numerical precision and A's rank may affect this.
-%             Setting tau = 0 can improve the orthonormality
-%             of the eigenvectors, but may also slow convergence.
+%             Decreasing the tau parameter can improve the orthonormality
+%             of the eigenvectors, but may also slow convergence; moreover,
+%             a too small value can also amplify numerical errors, so a bit
+%             of trial-and-error might be necessary to find the best
+%             threshold.
 %
 %       e   - A vector containing the eigenvalues of A.
 %
@@ -45,6 +48,18 @@ while n > 1
 end
 
 e = diag(A);
+
+% Normalize eigenvectors
+eigvec_norms = vecnorm(U);
+U = U ./ eigvec_norms;
+
+% Multiply each eigenvalue by the norm of the corresponding eigenvector
+e = e .* eigvec_norms';
+
+% Sort eigenvalues and eigenvectors in descending order, based on the
+% eigenvalues' updated values
+[e, sorted_indices] = sort(e,'descend');
+U = U(:,sorted_indices);
 
 end
 
