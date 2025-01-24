@@ -24,9 +24,10 @@ function [U,e] = eig_tridiag(A, tau)
 %
 %       e   - A vector containing the eigenvalues of A.
 %
-%   A naive spectral shift is implemented to accelerate the convergence 
-%   of the QR algorithm; future improvements may include the use of 
-%   more sophisticated shifts, such as the Wilkinson shift.
+%   Matrix deflation as well as a naive spectral shift are implemented to
+%   accelerate the convergence of the QR algorithm; future improvements
+%   may include the use of more sophisticated shifts, such as
+%   the Wilkinson shift.
 
 n = size(A,1);
 U = eye(n);
