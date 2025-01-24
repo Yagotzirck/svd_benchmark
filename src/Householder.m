@@ -10,8 +10,8 @@ classdef Householder
 %       length as x.
 %   In order to reduce computations, H is not really the Householder
 %   elementary matrix; instead, it's an object that exploits the rank-1 of
-%   H to avoid a matrix-vector product, replacing it with a vector outer
-%   product instead.
+%   H to avoid a matrix-vector product, replacing it with a vector inner
+%   product and a vector subtraction instead.
     
     properties (Access = private)
         beta
