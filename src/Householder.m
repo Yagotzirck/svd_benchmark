@@ -70,31 +70,26 @@ classdef Householder
 
 
     methods (Access = private)
-        function result = matmul_left(H, A)
+        function A = matmul_left(H, A)
             %MATMUL_LEFT Returns the equivalent of H * A.
-            
-            nRows = length(H.v);
             nCols = size(A, 2);
-            result = zeros(nRows, nCols);
 
             for j = 1:nCols
-                a = A(:, j);
+                a = A(:, j); % column vector
                 gamma = (H.v' * a) ./ H.beta;
-                result(:, j) = a - gamma .* H.v;
+                A(:, j) = a - gamma .* H.v;
             end
         end
 
 
-        function result = matmul_right(H, A)
+        function A = matmul_right(H, A)
              %MATMUL_RIGHT Returns the equivalent of A * H.
             nRows = size(A, 1);
-            nCols = length(H.v);
-            result = zeros(nRows, nCols);
 
             for i = 1:nRows
                 a = A(i, :); % row vector
                 gamma = (a * H.v) ./ H.beta;
-                result(i, :) = a - gamma .* H.v';
+                A(i, :) = a - gamma .* H.v';
             end
         end
 
