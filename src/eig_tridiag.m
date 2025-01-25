@@ -17,38 +17,41 @@ function [U,e] = eig_tridiag(A, tau)
 %             eigenvalues are expected to be orthonormal; however,
 %             numerical precision and A's rank may affect this.
 %             Decreasing the tau parameter can improve the orthonormality
-%             of the eigenvectors, but may also slow convergence; moreover,
-%             a too small value can also amplify numerical errors, so a bit
-%             of trial-and-error might be necessary to find the best
-%             threshold.
+%             of the eigenvectors, but may also slow convergence.
 %
 %       e   - A vector containing the eigenvalues of A.
 %
-%   Matrix deflation as well as a naive spectral shift are implemented to
-%   accelerate the convergence of the QR algorithm; future improvements
-%   may include the use of more sophisticated shifts, such as
-%   the Wilkinson shift.
+%   Matrix deflation as well as the Raylegh quotient spectral shift are
+%   implemented to accelerate the convergence of the QR algorithm;
+%   future improvements may include the use of more sophisticated shifts,
+%   such as the Wilkinson shift.
 
 n = size(A,1);
 U = eye(n);
+e = zeros(n,1);
+i = n;
 
-while n > 1
-    A_curr = A(1:n, 1:n);
-    U_curr = U(1:n, 1:n);
+while i > 1
+    U_curr = eye(i);
     
-    while abs( A_curr(n,n-1) ) > tau
-        spectral_shift = A_curr(n,n) * diag(ones(n,1));
-        [Q,R] = qr_tridiag(A_curr - spectral_shift, tau);
-        A_curr = calc_R_times_Q_tridiag(R,Q) + spectral_shift;
+    while abs( A(i,i-1) ) > tau
+        spectral_shift = diag( A(i,i) * ones(i,1) );
+        [Q,R] = qr_tridiag(A - spectral_shift, tau);
+        A = calc_R_times_Q_tridiag(R,Q) + spectral_shift;
         U_curr = U_curr * Q;
     end
 
-    A(1:n, 1:n) = A_curr;
-    U(1:n, 1:n) = U_curr;
-    n = n-1;
+    U_updater = eye(n);
+    U_updater(1:i,1:i) = U_curr;
+    U = U * U_updater;  % Update the eigenvectors' matrix
+    
+    e(i) = A(i,i);      % Save the found eigenvalue
+
+    i = i-1;
+    A = A(1:i, 1:i);    % Deflate A
 end
 
-e = diag(A);
+e(1) = A(1,1);
 
 % Normalize eigenvectors
 eigvec_norms = vecnorm(U);
@@ -57,8 +60,7 @@ U = U ./ eigvec_norms;
 % Multiply each eigenvalue by the norm of the corresponding eigenvector
 e = e .* eigvec_norms';
 
-% Sort eigenvalues and eigenvectors in descending order, based on the
-% eigenvalues' updated values
+% Sort eigenvalues and the corresponding eigenvectors in descending order
 [e, sorted_indices] = sort(e,'descend');
 U = U(:,sorted_indices);
 
