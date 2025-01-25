@@ -71,10 +71,11 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%% Helper function(s) %%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function A = calc_R_times_Q_tridiag(R, Q)
-% CALC_R_TIMES_Q Since R is tridiagonal symmetric and Q is a Hessenberg
-% matrix, we can implement the product R * Q in an optimized way.
-n = size(R,1);
-
+% CALC_R_TIMES_Q Since we know that:
+%   1) A = R * Q is tridiagonal symmetric (QR invariant);
+%   2) R is a tridiagonal matrix (one diagonal and two superdiagonals);
+%   3) Q is a Hessenberg matrix
+% we can implement the product R * Q in an optimized way.
 R_diag = diag(R);
 R_superdiag = diag(R,1);
 
@@ -83,10 +84,10 @@ Q_subdiag = diag(Q,-1);
 
 % Calculate diagonal elements
 A_diag = R_diag .* Q_diag;
-A_diag(1:n-1) = A_diag(1:n-1) + R_superdiag .* Q_subdiag;
+A_diag(1:end-1) = A_diag(1:end-1) + R_superdiag .* Q_subdiag;
 
 % Calculate subdiagonal and superdiagonal elements (they're the same)
-A_subdiag = R_diag(2:n) .* Q_subdiag;
+A_subdiag = R_diag(2:end) .* Q_subdiag;
 
 % Combine the three diagonals to build the tridiagonal matrix
 % for the next QR iteration
