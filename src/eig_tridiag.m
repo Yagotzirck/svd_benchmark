@@ -53,17 +53,6 @@ end
 
 e(1) = A(1,1);
 
-% Normalize eigenvectors
-eigvec_norms = vecnorm(U);
-U = U ./ eigvec_norms;
-
-% Multiply each eigenvalue by the norm of the corresponding eigenvector
-e = e .* eigvec_norms';
-
-% Sort eigenvalues and the corresponding eigenvectors in descending order
-[e, sorted_indices] = sort(e,'descend');
-U = U(:,sorted_indices);
-
 end
 
 
