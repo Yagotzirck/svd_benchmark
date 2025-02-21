@@ -30,8 +30,6 @@ function [A,H] = tridiag(A)
         A(i+1:end, i+1:end) = H_curr * A(i+1:end, i+1:end) * H_curr;
 
         % Accumulate the current Householder rotation matrix in H
-        H_updater = eye(size_A);
-        H_updater(i+1:end, i+1:end) = H_updater(i+1:end, i+1:end) * H_curr;
-        H = H * H_updater;
+        H(2:end, i+1:end) = H(2:end, i+1:end) * H_curr;
     end
 end
