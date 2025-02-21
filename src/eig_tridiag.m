@@ -41,9 +41,7 @@ while i > 1
         U_curr = U_curr * Q;
     end
 
-    U_updater = eye(n);
-    U_updater(1:i,1:i) = U_curr;
-    U = U * U_updater;  % Update the eigenvectors' matrix
+    U(:, 1:i) = U(:, 1:i) * U_curr;  % Update the eigenvectors' matrix
     
     e(i) = A(i,i);      % Save the found eigenvalue
 
