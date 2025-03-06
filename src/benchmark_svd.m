@@ -1,23 +1,24 @@
 clear;
 close all;
 
-%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%% Workspace variables %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% Set this to true to save plot images in .eps format
-save_plot_imgs = false;
-plot_imgs_path = './plot_imgs';
-
-if save_plot_imgs && ~exist(plot_imgs_path, 'dir')
-    mkdir(plot_imgs_path);
-end
-
+%% Workspace variables
 tau = 1e-8; % See 'help eig_tridiag' for details
 
-%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%% Tests for Hilbert and Pascal matrices %%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Tests for orthogonal matrices
+n_intervalL = 50;
+n_step = 50;
+n_intervalR = 800;
+n_list = n_intervalL: n_step: n_intervalR;
+
+% Initialize the objects
+orth_results = BenchmarkSVD('orth', n_list, n_list, tau);
+
+% Plot results
+plot_results(orth_results, n_list);
+
+
+%% Tests for Hilbert and Pascal matrices
 n_intervalL = 2;
 n_step = 1;
 n_intervalR = 100;
@@ -28,28 +29,11 @@ hilb_results = BenchmarkSVD('hilb', n_list, n_list, tau);
 pasc_results = BenchmarkSVD('pascal', n_list, n_list, tau);
 
 % Plot results
-plot_results(hilb_results, n_list, save_plot_imgs, plot_imgs_path);
-plot_results(pasc_results, n_list, save_plot_imgs, plot_imgs_path);
+plot_results(hilb_results, n_list);
+plot_results(pasc_results, n_list);
 
 
-%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%% Tests for orthogonal matrices %%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-n_intervalL = 50;
-n_step = 50;
-n_intervalR = 800;
-n_list = n_intervalL: n_step: n_intervalR;
-
-% Initialize the objects
-orth_results = BenchmarkSVD('orth', n_list, n_list, tau);
-
-% Plot results
-plot_results(orth_results, n_list, save_plot_imgs, plot_imgs_path);
-
-
-%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%% Tests for custom sigmas matrices %%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Tests for custom sigmas matrices
 n_size = 16;
 
 n_list = [n_size, n_size, n_size, n_size];
@@ -65,16 +49,11 @@ cond_values = {'10^2', '10^4', '10^8', '10^{16}'};
 sigmas_results = BenchmarkSVD('custom sigmas', n_list, n_list, tau, sigmas);
 
 % Plot results
-plot_results_sigmas( ...
-    sigmas_results, sigmas, cond_values, save_plot_imgs, plot_imgs_path ...
-);
+plot_results_sigmas(sigmas_results, sigmas, cond_values);
 
 
-
-%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%% Plot funcs %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function plot_results(svd_results, n_list, save_plot_imgs, plot_imgs_path)
+%% Plot funcs
+function plot_results(svd_results, n_list)
 plot_type_names =  {'U precision', 'V precision', 'Performance'};
 title_template = "%s results for %s matrices";
 label_x = "Matrix size (n)";
@@ -104,25 +83,13 @@ for i = 1:length(plot_type_names)
 
     legend(legend_names, 'Location', 'northwest');
 
-    if save_plot_imgs
-        curr_plt = gcf;
-        removeToolbarExplorationButtons(curr_plt);
-        img_name = sprintf( ...
-            "%s/%.2d - %s.eps", ...
-            plot_imgs_path, ...
-            curr_plt.Number, ...
-            plot_title ...
-            );
-        exportgraphics(curr_plt, img_name, 'ContentType','vector');
-    end
+    save_curr_plot_img(plot_title);
 end
 
 end
 
 
-function plot_results_sigmas( ...
-    svd_results, sigmas, cond_values, save_plot_imgs, plot_imgs_path ...
-)
+function plot_results_sigmas(svd_results, sigmas, cond_values)
 % If the test matrix has been built with known singular values, plot the
 % singular values' relative errors
 if ~strcmp(svd_results.type, 'custom sigmas')
@@ -148,17 +115,32 @@ for i = 1:length(cond_values)
 
     legend(legend_names, 'Location', 'north');
 
-    if save_plot_imgs
-        curr_plt = gcf;
-        removeToolbarExplorationButtons(curr_plt);
-        img_name = sprintf( ...
-            "%s/%.2d - %s.eps", ...
-            plot_imgs_path, ...
-            curr_plt.Number, ...
-            plot_title ...
-            );
-        exportgraphics(curr_plt, img_name, 'ContentType','vector');
-    end
+    save_curr_plot_img(plot_title);
+end
+
+end
+
+
+function save_curr_plot_img(plot_title)
+% Set this to true to save plot images in .eps format
+save_plot_imgs = false;
+plot_imgs_path = './plot_imgs';
+
+if save_plot_imgs && ~exist(plot_imgs_path, 'dir')
+    mkdir(plot_imgs_path);
+end
+
+if save_plot_imgs
+    curr_plt = gcf;
+    removeToolbarExplorationButtons(curr_plt);
+    img_name = sprintf( ...
+        "%s/%.2d - %s.eps", ...
+        plot_imgs_path, ...
+        curr_plt.Number, ...
+        plot_title ...
+        );
+    img_name = strrep(img_name, ' ', '_');
+    exportgraphics(curr_plt, img_name, 'ContentType','vector');
 end
 
 end

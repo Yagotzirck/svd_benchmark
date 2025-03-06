@@ -79,7 +79,6 @@ classdef Householder
         function A = matmul_right(H, A)
              %MATMUL_RIGHT Returns the equivalent of A * H.
              A = A - ( ((A * H.v) ./ H.beta) * H.v' );
-
         end
 
     end
