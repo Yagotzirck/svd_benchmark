@@ -34,14 +34,15 @@ plot_results(pasc_results, n_list);
 
 
 %% Tests for custom sigmas matrices
-n_size = 16;
+cond_max = 16;
+n_size = cond_max + 1;
 
 n_list = [n_size, n_size, n_size, n_size];
 sigmas = {
-    logspace(n_size/8, 1, n_size)';     % cond(A) = 1e02
-    logspace(n_size/4, 1, n_size)';     % cond(A) = 1e04
-    logspace(n_size/2, 1, n_size)';     % cond(A) = 1e08
-    logspace(n_size, 1, n_size)';       % cond(A) = 1e16
+    logspace(cond_max/8, 0, n_size)';     % cond(A) = 1e02
+    logspace(cond_max/4, 0, n_size)';     % cond(A) = 1e04
+    logspace(cond_max/2, 0, n_size)';     % cond(A) = 1e08
+    logspace(cond_max, 0, n_size)';       % cond(A) = 1e16
 };
 cond_values = {'10^2', '10^4', '10^8', '10^{16}'};
 
