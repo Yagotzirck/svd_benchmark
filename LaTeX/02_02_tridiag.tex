@@ -1,0 +1,185 @@
+\section{Tridiagonalizzazione della matrice}
+Per brevità d'annotazione, d'ora in poi faremo riferimento alla matrice 
+simmetrica (semi)definita positiva $A A^T$ (o $A^T A$, a seconda dei casi) con 
+cui si sta lavorando chiamandola $B$.
+
+Rimandando i dettagli all'apposita sezione, il primo passo da effettuare per 
+accelerare la convergenza dell'algoritmo QR consiste nell'effettuare una 
+trasformazione di $B$ in un'altra matrice $C$ trattabile più facilmente, tale 
+che
+\begin{itemize}
+	\item Gli autovalori restino invariati: $\sigma(C) = \sigma(B)$;
+	
+	\item La forma semplificata di $C$ rimanga preservata per ogni iterazione 
+dell'algoritmo QR (ovvero, la forma di $C$ dev'essere un'\textbf{invariante 
+QR}).
+\end{itemize}
+
+\subsection{Forma di Hessenberg}
+L'invariante QR che vogliamo ottenere nella matrice trasformata $C$ è la 
+\textbf{forma di Hessenberg}, vale a dire una matrice triangolare superiore che 
+ammette elementi non nulli nella prima sottodiagonale.
+
+A tale scopo, si esegue una fattorizzazione di $B$ riconducibile alla 
+fattorizzazione QR tramite inversioni di Householder, ma con la differenza che 
+ad ogni iterazione $i$ non si modifica la colonna $\underline{b}_i$ azzerando 
+tutti gli elementi sotto l'elemento diagonale $b_{ii}$, bensì \textbf{azzerando 
+tutti gli elementi sotto l'elemento nella sottodiagonale $b_{i+1,i}$}.
+
+Al fine di preservare gli autovalori, occorre inoltre effettuare una 
+\textbf{trasformazione di similitudine}; ovvero, se $H_i$ è l'inversione di 
+Householder all'iterazione $i$ tale che
+\begin{equation}\label{householder_iteration}
+H_i \cdot \underline{b}_{i}^{(i)} = 
+\begin{bmatrix}
+	b_{1i}^{(i)} \\
+	b_{2i}^{(i)} \\
+	\vdots \\
+	b_{ii}^{(i)} \\ 
+	\textcolor{red}{k_i} \\
+	\textcolor{red}{0} \\ 
+	\textcolor{red}{\vdots} \\ 
+	\textcolor{red}{0}
+\end{bmatrix}
+\end{equation}
+
+Invece di limitarcisi all'operazione $B^{(i+1)} = H_i \cdot B^{(i)}$ come nella 
+fattorizzazione QR, occorre effettuare la trasformazione di similitudine
+\begin{equation*}
+B^{(i+1)} = H_i \cdot B^{(i)} \cdot H_{i}^T
+\end{equation*}
+che, dal momento che la matrice elementare di Householder è simmetrica, si può 
+semplificare come
+\begin{equation}\label{hess_similarity_iteration}
+B^{(i+1)} = H_i \cdot B^{(i)} \cdot H_{i}
+\end{equation}
+
+Dal momento che $H_i$ è in realtà una matrice orlata, ovvero una matrice 
+identità in cui è stata "inserita" la matrice di Householder $\hat{H}_i$ in 
+basso a destra, il secondo prodotto a destra per $H_i$ non modificherà gli 
+elementi sotto gli elementi sottodiagonali $\underline{b}_{i+1,i}$ 
+che sono stati azzerati fino all'iterazione corrente $i$.
+
+Una prima stesura dell'algoritmo è quindi
+\begin{programma}
+function [B,H] = hessenberg(B)
+    size_B = size(B,1);
+    n = size_B - 2;
+    H = eye(size_B);
+    I = eye(size_B);
+
+    for i = 1:n
+        x = B(i+1:end, i);
+        H_hat = Householder(x);
+        H_curr = I;
+        H_curr(i+1:end, i+1:end) = H_hat;
+
+        B = H_curr * B * H_curr;
+
+        H = H * H_curr;
+    end
+end
+\end{programma}
+
+La funzione restituisce, oltre alla matrice di Hessenberg $C$, anche la matrice 
+$H$ delle inversioni di Householder accumulate, tale che
+\begin{equation}\label{B_C_similarity}
+H C H^T = B
+\end{equation}
+Tale relazione tornerà utile più avanti.
+
+\subsection{$C$ è matrice tridiagonale}
+Si osservi che nella \eqref{hess_similarity_iteration}, il prodotto per $H_i$ a 
+sinistra va a modificare l'i-esima colonna di $B^{(i)}$ nel modo esplicitato 
+nella \eqref{householder_iteration}, ed \textbf{essendo $B$ simmetrica}, il 
+prodotto per $H_i$ a destra va a modificare l'i-esima riga di $B^{(i)}$ in 
+maniera totalmente analoga (dato che l'i-esima riga è uguale alla trasposta 
+dell'i-esima colonna):
+\begin{equation*}
+(\underline{b}_{i}^{(i)})^T \cdot H_i = 
+\begin{bmatrix}
+	b_{1i}^{(i)} &
+	b_{2i}^{(i)} &
+	\cdots &
+	b_{ii}^{(i)} &
+	\textcolor{red}{k_i} &
+	\textcolor{red}{0} &
+	\textcolor{red}{\cdots} &
+	\textcolor{red}{0}
+\end{bmatrix}
+\end{equation*}
+
+Ciò implica che alla fine della trasformazione, $C$ non è solo in forma di 
+Hessenberg: è anche tridiagonale, con la sopradiagonale identica alla 
+sottodiagonale (dal momento che stiamo lavorando con matrici reali simmetriche, 
+non dobbiamo preoccuparci dei complessi coniugati). \\
+Questo farà ancora più comodo nell'implementazione dell'algoritmo QR: dato che 
+anche la simmetria di una matrice è un'invariante QR, ne segue che anche la 
+\textbf{tridiagonalità è un'invariante QR}, e ciò darà modo di implementare 
+diverse ottimizzazioni all'algoritmo, oltre a renderlo numericamente più 
+stabile.
+
+\subsection{Ottimizzazioni dell'algoritmo}
+Partendo dalla prima bozza dell'algoritmo, possiamo apportare le seguenti 
+ottimizzazioni:
+
+\subsubsection{Sfruttamento del rango 1 della matrice di Householder}
+Senza scendere troppo nel dettaglio, la matrice elementare di Householder nella 
+sua versione calcolata senza far uso di radici quadrate è definita come $H = I - 
+\frac{1}{\beta}vv^T$; piuttosto che calcolare $H$ esplicitamente ($O(n^2)$) per 
+poi usarla per eseguire prodotti matriciali ($O(n^3)$), è più conveniente 
+effettuare direttamente la moltiplicazione per le componenti di $H$:
+
+\noindent	
+\fbox{
+\begin{minipage}[t]{0.45\textwidth}
+	\centering \textbf{$H \cdot A$} \\
+	\vspace{-20pt}
+	\begin{align*}
+	&H \cdot A = \\
+	&(I - \frac{1}{\beta}vv^T) \cdot A = \\
+	&A - \frac{1}{\beta}vv^T \cdot A = \\
+	&A - v\cdot \frac{1}{\beta}(v^T \cdot A)
+\end{align*}
+\end{minipage}
+}
+\hfill
+\fbox{
+\begin{minipage}[t]{0.45\textwidth}
+	\centering \textbf{$A \cdot H$} \\
+	\vspace{-20pt}
+	\begin{align*}
+	&A \cdot H = \\
+	&A \cdot (I - \frac{1}{\beta}vv^T) = \\
+	&A - \frac{1}{\beta}A \cdot vv^T = \\
+	&A - \frac{1}{\beta}(A \cdot v) \cdot v^T
+\end{align*}
+\end{minipage}
+}
+
+In questo modo, si riduce la complessità da un ordine di $O(n^3)$ ad un ordine 
+di $O(n^2)$: nell'ultima derivazione di entrambe le forme $HA, AH$, abbiamo 
+all'interno delle parentesi un \textbf{prodotto matrice-vettore} di complessità 
+$O(n^2)$, seguito da una \textbf{scalatura degli elementi del vettore 
+risultante} per $\frac{1}{\beta}$ di complessità $O(n)$, a cui seguono un 
+\textbf{outer product} ed una \textbf{sottrazione matriciale}, entrambe di 
+complessità $O(n^2)$.
+
+Tali ottimizzazioni sono state implementate nella classe 
+\href{https://github.com/Yagotzirck/svd_benchmark/blob/main/src/Householder.m}{Householder.m}, 
+la quale restituirà un oggetto che tra le altre cose simula a livello sintattico 
+il classico prodotto matriciale, astraendo i dettagli implementativi definiti 
+all'interno della classe.
+
+\subsubsection{Sfruttamento della simmetria}
+Dal momento che per ogni iterazione $i$ la riga $i$ corrisponde alla trasposta 
+della colonna $i$, possiamo applicare la matrice di Householder per azzerare gli 
+elementi della colonna $i$ che stanno sotto l'elemento nella sottodiagonale, 
+replicare tale colonna nella riga $i$ trasponendola, per poi applicare la 
+trasformazione di similitudine alla sottomatrice ottenuta rimuovendo la riga e 
+la colonna $i$ da $B$, in modo che l'iterazione successiva lavori su tale 
+sottomatrice piuttosto che sull'intera matrice $B$. \\
+
+Tali ottimizzazioni sono state implementate nella funzione 
+\href{https://github.com/Yagotzirck/svd_benchmark/blob/main/src/tridiag.m}{tridiag.m}.
+

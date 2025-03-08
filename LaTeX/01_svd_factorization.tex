@@ -1,0 +1,139 @@
+\chapter{Fattorizzazione SVD}
+
+\section{SVD standard}
+Data una qualunque matrice
+\begin{equation*}  
+A \in \mathbb{C}^{m \times n},\quad k = rank(A)
+\end{equation*}
+è sempre possibile effettuarne una fattorizzazione SVD che consente di scomporla 
+in tre matrici $U, \Sigma, V$:
+\begin{equation}\label{SVD_standard}
+A = U \Sigma V^*
+\end{equation}
+dove
+\begin{itemize}
+	\item $U \in \mathbb{C}^{m \times m},\quad U^*U = UU^*=I_{m}$, le cui colonne 
+sono
+	definite come i \textbf{vettori singolari sinistri} di $A$;
+	
+	\item $\Sigma \in \mathbb{R}^{m\times n}$ è una matrice con $k$ elementi reali
+	positivi lungo la diagonale (detti \textbf{valori singolari di $A$}), e zeri 
+altrove;
+	
+	\item $V \in \mathbb{C}^{n \times n}, \quad V^*V = VV^*=I_{n}$, le cui colonne 
+sono
+	definite come i \textbf{vettori singolari destri} di $A$.
+\end{itemize}  
+
+Tale fattorizzazione è chiamata \textbf{fattorizzazione SVD piena / standard}.
+
+\newpage
+\section{SVD compatta}
+Si osservi che al fine di ricostruire $A$, solo i primi $k$ vettori singolari 
+sinistri e destri sono necessari; i restanti vettori
+\begin{equation*}
+	\underline{u}_{i} \in U, i = k+1 \cdots m
+\end{equation*}  
+
+\begin{equation*}
+	\underline{v}_{i} \in V, i = k+1 \cdots n
+\end{equation*}
+
+sono vettori creati artificialmente al fine di ottenere due matrici ortogonali 
+(o unitarie, se $A \in \mathbb{C}^{m \times m}$), creandoli in maniera casuale 
+per poi ortonormalizzarli rispetto ai restanti vettori con un algoritmo come 
+Householder o Modified Gram-Schmidt.
+
+Si verifica facilmente che i vettori singolari "artificiali" non influiscono 
+nella ricostruzione di $A$ dal fatto che in \eqref{SVD_standard}, essendo 
+$\Sigma$ matrice diagonale con solamente i primi $k$ elementi sulla diagonale 
+non nulli:
+\begin{itemize}
+	\item Se consideriamo $U \Sigma$, vengono scalate le prime $k$ colonne di $U$ 
+ed azzerate le ultime $m-k$ colonne;
+	
+	\item Se consideriamo $\Sigma V^*$, vengono scalate le prime $k$ righe di $V^*$ 
+ed azzerate le ultime $n-k$ righe (che equivale a dire che vengono scalate le 
+prime $k$ colonne di $V$ ed azzerate le ultime $n-k$ colonne).
+\end{itemize}
+
+Se quindi definiamo le tre matrici
+\begin{equation*}  
+U_{1} = \begin{bmatrix}
+\underline{u}_1 & \underline{u}_2 & \cdots & \underline{u}_k
+\end{bmatrix}
+\in \mathbb{C}^{m \times k},
+\quad U^*U = I_k
+\end{equation*}
+
+\begin{equation*}  
+\Sigma_{k} = \begin{bmatrix}
+\sigma_1 & & & \\
+& \sigma_2 & & \\
+& & \ddots & \\
+& & & \sigma_k
+\end{bmatrix} \in \mathbb{R}^{k \times k},
+\quad \sigma_i \in \mathbb{R} \wedge \sigma_i > 0, \quad i = 1 \cdots k
+\end{equation*}
+
+\begin{equation*}  
+V_{1} = \begin{bmatrix}
+\underline{v}_1 & \underline{v}_2 & \cdots & \underline{v}_k
+\end{bmatrix}
+\in \mathbb{C}^{n \times k},
+\quad V^*V = I_k
+\end{equation*}
+
+otteniamo la \textbf{fattorizzazione SVD compatta} di $A$:
+\begin{equation}\label{SVD_compact}
+A = U_1 \Sigma_k {V_1}^*
+\end{equation}
+
+Chiamata anche \textbf{full-rank SVD} in quanto tutt'e tre le matrici hanno 
+rango pieno k (\textit{$U_1$ e $V_1$ sono a rango pieno di colonna, mentre 
+$\Sigma_k$ è quadrata a rango pieno}).
+
+
+\section{Economy-sized SVD}
+\label{sec:SVD_econ}
+Stabilire il rango esatto $k$ di una matrice è impossibile da un punto di vista 
+numerico, dal momento che a causa di errori relativi alla precisione di macchina 
+si ottiene raramente il valore esatto 0 per i valori singolari $\sigma_i, \quad 
+i > k$.
+
+Infatti, quando si calcola il rango di una matrice se ne sta in realtà 
+calcolando il rango numerico (o \textbf{$\epsilon$-rank}), in cui si sceglie una 
+soglia $\epsilon$ e si considerano nulli tutti i $\sigma_i < \epsilon$.
+
+L'affidabilità di tale approccio è però inversamente proporzionale al 
+condizionamento della matrice sotto analisi; a titolo d'esempio, la teoria ci 
+dice che la matrice di Hilbert è a rango pieno, tuttavia se eseguiamo le 
+seguenti istruzioni su MATLAB:
+
+\begin{programma}
+H = hilb(100);
+rank(H)
+\end{programma}
+
+Il risultato sarà 18, e non 100 come atteso.
+
+Per le ragioni esplicate sopra, data una matrice $A \in \mathbb{C}^{m \times 
+n}$, nella pratica viene eseguita una fattorizzazione SVD simile alla SVD 
+compatta \eqref{SVD_compact}, ma con la differenza che al posto di
+\begin{equation*}
+k = rank(A)
+\end{equation*}
+
+Si pone invece
+\begin{equation*}
+k = min(m,n) \geq rank(A)
+\end{equation*}
+
+Questo perchè il rango per righe di una matrice è uguale al suo rango per 
+colonne, e di conseguenza è limitato superiormente dal minimo valore tra i due 
+(numero di righe se la matrice è grassa, numero di colonne se la matrice è 
+alta).
+
+Tale fattorizzazione prende il nome di \textbf{Economy-sized SVD}, usata ad es. 
+dalla funzione \textit{svd()} di MATLAB se viene specificato il parametro 
+\textit{'econ'}.

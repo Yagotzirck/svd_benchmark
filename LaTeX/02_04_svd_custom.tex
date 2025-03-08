@@ -1,0 +1,55 @@
+\section{Calcolo dell'SVD}
+Mettendo assieme tutto quanto è stato visto finora, date le matrici
+\begin{itemize}
+	\item $A$: Matrice reale generica, di cui vogliamo effettuare la 
+fattorizzazione SVD;
+	\item $B$: Matrice (semi)definita positiva, ottenuta dal prodotto $A A^T$ 
+oppure $A^T A$;
+	\item $C$: Matrice tridiagonale simmetrica, ricavata da $B$ e tale che $C \sim 
+B$;
+	\item $H$: Matrice ortogonale, con la quale vale la relazione di similitudine 
+\eqref{B_C_similarity}
+\end{itemize}
+
+Al fine di ottenere autovalori ed autovettori di $B$, il primo passo consiste 
+nel chiamare la funzione
+\begin{programma}
+[X,e] = eig_tridiag(C);
+\end{programma}
+
+ Si ha quindi che
+ \begin{itemize}
+ 	\item $\sigma(C) = e \wedge C \sim B \Rightarrow \sigma(B) = e$;
+ 	\item X è la matrice degli autovettori di $C$, per la quale, data la matrice 
+$\Lambda = diag(e)$, vale la fattorizzazione spettrale $X^T C X = \Lambda$.
+ \end{itemize}
+
+Partendo dalla \eqref{B_C_similarity}, si ha che $C = H^T B H$; sostitendola 
+nella fattorizzazione spettrale citata sopra, si ottiene 
+
+ \begin{equation*}
+	(\textcolor{red}{H X})^T B (\textcolor{red}{H X}) = \Lambda
+\end{equation*}
+Ovvero, $\textcolor{red}{H X}$ è la matrice degli autovettori di $B$, il che 
+implica a sua volta che
+
+\begin{itemize}
+	\item $B = A A^T \Rightarrow H X = U$ (vettori singolari sinistri di $A$);
+	\item $B = A^T A \Rightarrow H X = V$ (vettori singolari destri di $A$).
+\end{itemize}
+
+I passi per concludere il calcolo dell'SVD sono i seguenti:
+\begin{enumerate}
+	\item Ordinamento degli autovalori nel vettore $e$, in ordine non crescente;
+	\item Ordinamento dei vettori singolari in $B$, usando gli stessi indici di 
+ordinamento usati per $e$ al fine di mantenere l'associazione tra valori 
+singolari e corrispondenti vettori singolari;
+	\item Calcolo della radice quadrata degli elementi in $e$, per passare da 
+autovalori di $B$ a valori singolari di $A$;
+	\item Calcolo dell'altra matrice dei vettori singolari, seguendo quanto 
+spiegato nella \autoref{subsec:SVD_calc}.
+\end{enumerate}
+
+\noindent
+I passaggi descritti in questa sezione sono stati implementati nel file 
+\href{https://github.com/Yagotzirck/svd_benchmark/blob/main/src/svd_custom.m}{svd\_custom.m}.

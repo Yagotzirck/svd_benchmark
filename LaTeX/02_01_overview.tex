@@ -1,0 +1,170 @@
+\section{Panoramica generale}
+Data una matrice $A$ con l'associata matrice degli autovettori $X$ e la matrice 
+diagonale degli autovalori $\Lambda$, vale la relazione
+\begin{equation}\label{eval_evec_relationship}
+A X = X \Lambda
+\end{equation}
+
+Rifacendoci alla forma compatta della fattorizzazione SVD in 
+\eqref{SVD_compact}, si ha che
+\begin{equation*}
+	U_{1}^T U_1 = I_k
+\end{equation*}
+\begin{equation*}
+	V_{1}^T V_1 = I_k
+\end{equation*}
+
+
+Valgono quindi le seguenti due uguaglianze, entrambe derivate dalla forma 
+compatta (la prima è ottenuta moltiplicando ambo i lati a destra per $V_1$, 
+mentre per la seconda bisogna prima trasporre ambo i lati dell'equazione per poi 
+moltiplicarli a destra per $U_1$):
+\begin{equation}\label{AV_eq_US}
+	A V_1 = U_1 \Sigma_k
+\end{equation}
+\begin{equation}\label{AtU_eq_VS}
+	A^T U_1 = V_1 \Sigma_k
+\end{equation}
+
+
+\subsection{$V_1, \Sigma_{k}^2$ = autovettori e autovalori di $A^T A$}
+Consideriamo la \eqref{AV_eq_US} e moltiplichiamola a sinistra per $A^T$:
+\begin{flushleft}
+\vspace{-20pt}
+\begin{align*}
+	A^T A V_1 &= \textcolor{red}{A^T U_1} \Sigma_k \Rightarrow \\
+	A^T A V_1 &= \textcolor{red}{V_1 \Sigma_k} \Sigma_k \Rightarrow \quad 
+\text{(vedi \eqref{AtU_eq_VS}}) \\
+	A^T A V_1 &= V_1 \Sigma_{k}^2
+\end{align*}
+\end{flushleft}
+
+Se confrontiamo l'ultima uguaglianza ottenuta con la 
+\eqref{eval_evec_relationship}, appare evidente che
+\begin{itemize}
+	\item I vettori singolari destri di $A$ ($V_1$) sono gli autovettori di $A^T 
+A$;
+	\item I valori singolari al quadrato di $A$ ($\Sigma_{k}^2$) sono gli 
+autovalori di $A^T A$.
+\end{itemize}
+
+
+\subsection{$U_1, \Sigma_{k}^2$ = autovettori e autovalori di $A A^T$}
+Consideriamo ora la \eqref{AtU_eq_VS} e moltiplichiamola a sinistra per $A$:
+\begin{flushleft}
+\vspace{-20pt}
+\begin{align*}
+	A A^T U_1 &= \textcolor{red}{A V_1} \Sigma_k \Rightarrow \\
+	A A^T U_1 &= \textcolor{red}{U_1 \Sigma_k} \Sigma_k \Rightarrow \quad 
+\text{(vedi \eqref{AV_eq_US}}) \\
+	A A^T U_1 &= U_1 \Sigma_{k}^2
+\end{align*}
+\end{flushleft}
+
+Anche in questo caso, se confrontiamo l'ultima uguaglianza ottenuta con la 
+\eqref{eval_evec_relationship}, appare evidente che
+\begin{itemize}
+	\item I vettori singolari sinistri di $A$ ($U_1$) sono gli autovettori di $A 
+A^T$;
+	\item I valori singolari al quadrato di $A$ ($\Sigma_{k}^2$) sono gli 
+autovalori di $A A^T$.
+\end{itemize}
+
+\subsection{Calcolo dell'SVD - idea di base}
+\label{subsec:SVD_calc}
+Oltre a quanto detto sopra, se è nota una delle due matrici dei vettori 
+singolari tra $U_1$ e $V_1$ e la matrice dei valori singolari $\Sigma_k$, 
+possiamo facilmente ricavare l'altra matrice dei vettori singolari partendo 
+dalla \eqref{SVD_compact}:
+\begin{equation*}
+	U_1 = A V_1 \Sigma_{k}^{-1}
+\end{equation*}
+\begin{equation*}
+	V_1 = A^T U_1 \Sigma_{k}^{-1}
+\end{equation*}
+
+Per quanto riguarda la scelta della matrice dei vettori singolari da calcolare 
+per prima tramite l'algoritmo QR, è conveniente scegliere
+\begin{itemize}
+	\item $U_1$, se $m \leq n$;
+	\item $V_1$, se $n < m$.
+\end{itemize}
+
+Questo perchè, come accennato in \ref{sec:SVD_econ}, si riesce a lavorare con la 
+minor dimensione possibile senza sacrificare le informazioni utili per la 
+ricostruzione di $A$.
+
+L'approccio alternativo consisterebbe nell'applicare l'algoritmo QR due volte 
+per ricavare $U$ e $V$ in maniera indipendente, ma ciò presenta i seguenti 
+problemi:
+\begin{enumerate}
+	\item \textbf{Incremento della complessità}: \textbf{Col primo approccio}, si 
+esegue l'algoritmo QR una sola volta e si ricava l'altra matrice dei vettori 
+singolari effettuando $k^2$ divisioni (ogni colonna $\underline{u}_i$ o 
+$\underline{v}_i$ viene divisa per il corrispondente $\sigma_i, i = 1 \cdots k$) 
+a cui segue un prodotto con la matrice $A$, mentre \textbf{col secondo 
+approccio} si esegue due volte l'algorimo QR (che essendo un algoritmo 
+iterativo, ha complessità maggiore rispetto al prodotto matrice-vettore o al 
+prodotto matrice-matrice); inoltre, ci si riconduce ad un calcolo di \textbf{SVD 
+standard}, in cui (a meno che $A$ non sia quadrata a rango pieno) molti vettori 
+colonna sarebbero superflui al fine di ricavare $A$;
+	
+	\item \textbf{Sign indeterminacy}: Dal momento che gli autovettori calcolati 
+con l'algoritmo QR possono convergere in maniera non determinabile sia ad un 
+determinato segno / direzione, sia alla direzione opposta, se si calcolano $U,V$ 
+in maniera indipendente potrebbe capitare che alcuni vettori colonna 
+$\underline{u}_i$, $\underline{v}_i$ abbiano segno tale per cui la matrice di 
+rango 1
+\begin{equation*}
+\sigma_i \cdot \underline{u}_i \cdot \underline{v}_{i}^T
+\end{equation*}
+contenga elementi di segno opposto a quello che dovrebbero avere al fine di 
+ricostruire $A$ nella sua rappresentazione SVD come outer product.
+
+Per risolvere il problema, si potrebbe ad esempio partire dall'uguaglianza $A V 
+= U \Sigma$, e tenendo a mente che $\sigma_i \in \mathbb{R}^+, i = 1 \cdots k$ e 
+che ai fini della verifica del segno è sufficiente verificare l'uguaglianza dei 
+segni per gli elementi di una sola riga in ambo i lati dell'equazione, si può 
+semplificare l'espressione per sistemare i segni dei vettori colonna in modo che 
+siano congrui al fine di ricostruire $A$ nel seguente modo:
+\begin{equation*}
+	sgn(A_{1}^T \cdot \underline{v}_j) = sgn(u_{1j}), \quad j = 1 \cdots n
+\end{equation*}
+ ma ciò comporta in ogni caso un ulteriore incremento del costo computazionale 
+dell'ordine di $O(n^2)$ (occorre effettuare $n$ prodotti scalari a sinistra 
+dell'uguaglianza, ognuno di complessità $O(n)$).
+\end{enumerate}
+
+Detto ciò, una prima bozza per il nostro algoritmo può essere la seguente:
+\begin{programma}
+function [U, s, V] = svd_custom(A)
+[m,n] = size(A);
+
+if m <= n
+   	[U,s] = calc_singular(A * A');
+   	V = A' * (U ./ s');
+else
+   	[V,s] = calc_singular(A' * A);
+    U = A * (V ./ s');
+end
+
+end
+
+
+function [X,s] = calc_singular(B)
+[X,E] = eig(B);
+e = diag(E);
+
+% Sort eigenvalues and the corresponding
+% eigenvectors in descending order
+[e, X_sorted_indices] = sort(e,'descend');
+X = X(:, X_sorted_indices);
+
+% Compute singular values
+s = sqrt(e);
+end
+\end{programma}
+
+Nel resto del capitolo, esploreremo alcune ottimizzazioni attuabili al fine di 
+migliorare la stabilità e performance dell'algoritmo.
+

@@ -1,0 +1,44 @@
+\chapter{Conclusioni}
+In questa relazione abbiamo implementato un algoritmo di fattorizzazione 
+SVD reinterpretandolo come calcolo degli autovalori ed autovettori, sfruttando 
+il legame che mette in relazione valori e vettori singolari di una generica 
+matrice $A$ con autovalori ed autovettori delle matrici $A^T A$ e $A A^T$ da 
+essa derivate.
+
+Con una serie di test, abbiamo inoltre verificato che nonostante l'approccio 
+usato sia corretto da un punto di vista teorico ed algebrico, una sua 
+implementazione da usare in contesti pratici è poco conveniente da un punto di 
+vista numerico, per i seguenti motivi:
+\begin{enumerate}
+	\item \textbf{Inefficienza}: Il calcolo preliminare della matrice $B = A^T A$ 
+oppure $B = A A^T$ ha complessità di un ordine di grandezza pari a $O(n^3)$, che 
+ha un peso non indifferente per matrici molto grandi;
+	
+	\item \textbf{Inaccuratezza e propagazione degli errori}: una volta trovata la 
+prima matrice dei vettori singolari ed i valori singolari tramite l'algoritmo 
+QR, quando si calcola la seconda matrice dei vettori singolari ricavandola da 
+$A$ si avrà una perdita di ortonormalità tra i suoi vettori colonna direttamente 
+proporzionale a $\kappa_2(A)$.
+	
+	Si potrebbe pensare di applicare l'algoritmo QR due volte e calcolare 
+separatamente $U,V$ per risolvere il problema, ma oltre ad esacerbare il 
+problema dell'inefficienza menzionato al punto 1), non è più garantito il fatto 
+che $U \Sigma V^T = A$: ad esempio, i valori singolari ricavati da $A A^T$ 
+potrebbero non essere congrui con quelli ricavati da $A^T A$.
+	
+	Inoltre, dato che $\kappa_2(B) = (\kappa_2(A))^2$, l'errore assoluto dei valori 
+singolari calcolati rispetto ai valori singolari corretti risulta essere elevato 
+al quadrato;
+	
+	\item \textbf{Overflow e underflow}: Con matrici aventi valori singolari molto 
+grandi e/o prossimi allo zero, il calcolo di tali valori potrebbe andare 
+rispettivamente in overflow o in underflow, impedendo così un calcolo corretto 
+di tali valori singolari.
+\end{enumerate}
+
+Per i motivi sopra menzionati, la fattorizzazione SVD viene implementata tramite 
+algoritmi che lavorano direttamente su $A$ basati sull'algoritmo di 
+Golub/Kahan/Reinsch che ne effettua una bidiagonalizzazione come passo 
+preliminare, ma i cui dettagli implementativi trascendono lo scopo di questa 
+relazione.
+

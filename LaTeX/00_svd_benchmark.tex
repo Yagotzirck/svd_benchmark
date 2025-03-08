@@ -1,0 +1,52 @@
+\documentclass[a4paper,12pt]{report}
+
+\usepackage[italian]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{verbatim}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{xcolor}
+
+\newenvironment{programma}
+{\small\quote\verbatim}
+{\endverbatim\endquote}
+
+\begin{document}
+
+\begin{titlepage}
+\setlength{\topmargin}{-1.5cm}
+\enlargethispage{28cm}
+\begin{center}
+  \includegraphics[scale=.5]{imgs/logo_uni_cagliari.png}\\[1cm]
+  \LARGE UNIVERSIT\`A DEGLI STUDI DI CAGLIARI\\[.1cm]
+  \Large Facolt\`a di Scienze\\[.1cm]
+  \Large Corso di Laurea Magistrale in Informatica\\[.1cm]
+  \Large Corso: Computational Mathematics\\[1.5cm]
+  \Huge{\bf  Implementazione ed analisi di un
+  			 algoritmo di fattorizzazione SVD per matrici reali
+		}\\[5.5cm]
+  \Large Studente:\hfill Docente:\\
+  \Large {\bf Alessio Simbula\hfill Prof. Giuseppe Rodriguez}
+  \begin{flushleft}
+  \vspace{-0.5cm}
+  \Large { Matr. 60/73/65282}\\[4.0cm]
+  \end{flushleft}
+  \Large Anno Accademico 2023/24
+ \end{center}
+\end{titlepage}
+
+
+\tableofcontents
+\clearpage
+
+\include{01_svd_factorization}
+\include{02_00_svd_implementation}
+\include{03_benchmarks}
+\include{04_conclusions}
+
+
+\end{document}

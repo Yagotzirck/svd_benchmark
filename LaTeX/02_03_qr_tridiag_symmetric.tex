@@ -1,0 +1,165 @@
+\section{Algoritmo QR per matrici tridiagonali simmetriche}
+Una volta ottenuta la matrice tridiagonale simmetrica $C$, possiamo procedere a 
+calcolarne autovalori ed autovettori tramite l'algoritmo QR.
+
+Nella sua forma base, l'algoritmo QR è rappresentabile nel seguente modo:
+
+\begin{programma}
+function [A,U] = eig_qr(A)
+n = size(A,1);
+U = eye(n);
+
+while A ~= triu(A)
+	[Q,R] = qr(A);
+	A = R * Q;
+	U = U * Q;
+end
+
+end
+\end{programma}
+
+Invocando quindi l'algoritmo nel seguente modo:
+\begin{programma}
+	[T,X] = eig_qr(A);
+\end{programma}
+Se l'algoritmo converge, restituirà due matrici $T,X$ con le quali è possibile 
+ricostruire la \textbf{forma di Schur} di $A$:
+\begin{equation*}
+	T = X^* A X
+\end{equation*}
+
+Dove $X$ è matrice unitaria e $T$ è matrice triangolare superiore. 
+\subsection{$A = A^* \Rightarrow $ Fattorizzazione spettrale}
+Inoltre, se $A$ è Hermitiana, si può verificare facilmente che anche $T$ lo è, 
+ma la combinazione delle proprietà di matrice Hermitiana e triangolare superiore 
+implica che $T$ sia una matrice diagonale con elementi reali sulla diagonale, 
+che a sua volta implica che le matrici $T,X$ forniscono la 
+\textbf{fattorizzazione spettrale} di $A$:
+\begin{equation*}
+	A = X T X^*
+\end{equation*}
+
+Ovvero:
+\begin{itemize}
+	\item $diag(T) = \sigma(A)$;
+	\item Le colonne di $X$ sono gli autovettori di $A$.
+\end{itemize}
+
+\newpage
+\subsection{Ottimizzazioni dell'algoritmo}
+Vediamo ora in che modo possiamo migliorare l'algoritmo, sfruttando il fatto di 
+lavorare con la matrice $C\in \mathbb{R}^{n \times n}$ tridiagonalizzata.
+
+\subsubsection{Fattorizzazione QR}
+Dal momento che gli unici elementi non nulli nel triangolo inferiore sono gli 
+$n-1$ elementi nella sottodiagonale, possiamo effettuare la fattorizzazione QR 
+azzerando selettivamente tali elementi (se sono maggiori di una certa soglia di 
+tolleranza $\tau$) con \textbf{$n-1$ rotazioni di Givens}, riconducendoci ad una 
+complessità lineare in ogni iterazione rispetto alla complessità cubica che si 
+avrebbe invece applicando l'algoritmo di Householder. \\
+Sono state inoltre applicate altre ottimizzazioni che sfruttano l'abbondanza di 
+zeri nella matrice per il calcolo delle matrici $Q,R$, che sono state 
+documentate nei commenti dell'implementazione nel file MATLAB 
+\href{https://github.com/Yagotzirck/svd_benchmark/blob/main/src/qr_tridiag.m}{qr\_tridiag.m}.
+
+\subsubsection{Prodotto $R \cdot Q$}
+Sfruttando furbamente alcune proprietà come:
+\begin{itemize}
+	\item Le invarianti QR di $C$ matrice \textbf{simmetrica} e 
+\textbf{tridiagonale};
+	\item $R$ contenente una diagonale, due superdiagonali e zeri altrove;
+	\item $Q$ matrice di Hessenberg
+\end{itemize}
+
+É possibile effettuare il prodotto $C = R \cdot Q$ ragionando solo sugli 
+elementi sulla diagonale e sulla sottodiagonale di $C$ (la sopradiagonale è una 
+copia della sottodiagonale), riducendolo così a
+\begin{itemize}
+	\item Due prodotti di Hadamard ed una somma vettoriale, per gli elementi sulla diagonale;
+	\item Un prodotto di Hadamard, per gli elementi sulla sottodiagonale.
+\end{itemize}
+Essendo tutte operazioni che coinvolgono vettori estratti dalle diagonali, 
+sottodiagonali e superdiagonali di $R$ e $Q$, si ottiene quindi una complessità 
+con un ordine di grandezza pari a $O(n)$ invece di $O(n^3)$ che si avrebbe 
+effettuando il prodotto matriciale pieno. 
+
+Tale prodotto è stato implementato nella funzione ausiliaria \\
+\href{https://github.com/Yagotzirck/svd_benchmark/blob/61d9bdf69b0431b83079c767cf2fc036bdc601a2/src/eig_tridiag.m#L60}{calc\_R\_times\_Q\_tridiag()}, 
+presente nel file eig\_tridiag.m;
+
+\subsubsection{Spectral shift}
+Al fine di far convergere $C$ ad una matrice diagonale, è sufficiente verificare 
+che ad ogni iterazione $i = n-1 \cdots 2$ l'elemento nella sottodiagonale 
+$c_{i,i-1}$ sia inferiore ad una soglia prefissata $\tau$; se lo è, si procede 
+ad analizzare il successivo elemento sottodiagonale, altrimenti si ripete il 
+numero d'iterazioni dell'algoritmo QR necessarie affinchè $c_{i,i-1} < \tau$.
+
+Inoltre, la teoria ci dice che la velocità di convergenza a 0 di ogni elemento 
+sottodiagonale $c_{i,i-1}$ in relazione al numero di iterazioni $k$ è data dalla 
+$k$-esima potenza del rapporto tra autovalori adiacenti:
+\begin{equation*}
+	\left( \frac{\lambda_{i+1}}{\lambda_i} \right)^k
+\end{equation*}
+
+\textcolor{red}{
+Digressione: Nel nostro caso, anche se $\lambda_{i+1} = \lambda_i$ si arriva 
+comunque alla convergenza; infatti, la non-convergenza si verifica quando si 
+hanno autovalori di modulo uguale ma di segno opposto (oppure un autovalore è 
+complesso coniugato dell'altro), ma dal momento che $C$ è (semi)definita 
+positiva, si ha che
+\begin{equation*}
+	\lambda_i \geq 0 \wedge \lambda_i \in \mathbb{R}, \quad i = 1 \cdots n 
+\end{equation*}
+Il che implica che
+\begin{equation*}
+	|\lambda_{i+1}| = |\lambda_i| \Rightarrow \lambda_{i+1} = \lambda_i
+\end{equation*}
+}
+
+L'idea è quindi quella di aumentare ad ogni iterazione il divario tra numeratore 
+e denominatore affinchè $c_{i,i-1}$ converga a zero più velocemente, tramite una 
+\textbf{traslazione dello spettro} di $C$ utilizzando $\tau_k = c_{i,i}$ come 
+approssimazione di $\lambda_{i+1}$:
+\begin{equation*}
+	\left( \frac{\lambda_{i+1} - \tau_k}{\lambda_i - \tau_k} \right)^k \ll \left( 
+\frac{\lambda_{i+1}}{\lambda_i} \right)^k
+\end{equation*}
+
+L'algoritmo QR diventa quindi:
+\begin{align*}
+&for \; k=0,1,\cdots \\
+&	[Q_k, R_k] = qr(A^{(k)} - \tau_k \cdot I) \\
+&	A^{(k+1)} = Q_k \cdot R_k + \tau_k \cdot I \\
+\end{align*}
+
+Tale tecnica prende il nome di \textbf{Rayleigh quotient shift}, e sebbene sia 
+relativamente semplice aiuta ad accelerare la convergenza rispetto alla versione 
+senza traslazione \textcolor{red}{(per concludere la digressione fatta 
+precedentemente, se si sta invece lavorando con matrici per le quali non è 
+garantita la convergenza, è più opportuno passare all'utilizzo di una 
+traslazione più sofisticata come il \textbf{Wilkinson shift})}.
+
+Ciò funziona in quanto si può verificare facilmente che la relazione di 
+similitudine tra la successione di matrici resta valida:
+\begin{equation*}
+	A^{(k+1)} \sim A ^{k}, \quad k=0,1,\cdots
+\end{equation*}
+
+\subsubsection{Deflazione}
+Una volta azzerato l'elemento sottodiagonale $c_{i,i-1}$, si ha che
+\begin{itemize}
+	\item $c_{ii} = \lambda_n$;
+	\item $\underline{u}_i$ è l'autovettore associato a $\lambda_n$.
+\end{itemize}
+
+Dal momento che l'i-esimo autovalore ed autovettore si sono stabilizzati, 
+piuttosto che continuare a lavorare sulla matrice $C \in \mathbb{R}^{i \times 
+i}$ di ordine $i$, è più opportuno effettuarne una \textbf{deflazione} 
+riducendola ad un ordine $i-1$ rimuovendo l'ultima riga e colonna, al fine di 
+ridurre la complessità computazionale nelle iterazioni successive dell'algoritmo 
+QR.
+
+Tale accorgimento (assieme a quello relativo alla traslazione dello spettro) è 
+stato implementato nel file 
+\href{https://github.com/Yagotzirck/svd_benchmark/blob/main/src/eig_tridiag.m}{eig\_tridiag.m}, 
+nell'omonima funzione.

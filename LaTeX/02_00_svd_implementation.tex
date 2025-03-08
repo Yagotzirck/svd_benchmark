@@ -1,0 +1,18 @@
+\chapter{Implementazione dell'algoritmo}
+In questo capitolo verrà descritto a livello teorico ed implementativo il metodo 
+classico per il calcolo dell'SVD di una matrice che si rifà all'algoritmo QR per 
+il calcolo di autovalori ed autovettori; dopo una rapida panoramica sulla 
+derivazione della versione banale, verranno poi descritte diverse ottimizzazioni 
+apportate per rendere l'algoritmo computazionalmente più efficiente.
+
+La versione implementata è applicabile solo a matrici reali, in quanto per tali 
+matrici è possibile implementare più ottimizzazioni rispetto alle matrici 
+complesse, come vedremo in seguito.
+
+\input{02_01_overview}
+\newpage
+\input{02_02_tridiag}
+\newpage
+\input{02_03_qr_tridiag_symmetric}
+\newpage
+\input{02_04_svd_custom}
