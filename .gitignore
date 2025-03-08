@@ -306,6 +306,9 @@ TSWLatexianTemp*
 # Uncomment the next line to have this generated file ignored.
 #*Notes.bib
 
+% Ignore compiled document
+00_svd_benchmark.pdf
+
 
 ######################################################################
 # MATLAB autosave files
