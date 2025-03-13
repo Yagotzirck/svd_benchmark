@@ -132,12 +132,12 @@ Hilbert, ma con gli errori in $V$ che presentano valori più alti.
 Ciò è dovuto al fatto che gli errori in $V$ per la matrice di Hilbert sono 
 quantitativamente mitigati dal fatto che
 \begin{equation*}
-	\lim_{n \to \infty} max(hilb(n)(:)) = 1
+	\lim_{n \to \infty} \max(hilb(n)(:)) = 1
 \end{equation*}
 
 Mentre per la matrice di Pascal si ha che
 \begin{equation*}
-	\lim_{n \to \infty} max(pascal(n)(:)) = +\infty
+	\lim_{n \to \infty} \max(pascal(n)(:)) = +\infty
 \end{equation*}
 
 In altri termini, i valori singolari della matrice di Hilbert tendono ad andare 
@@ -250,7 +250,7 @@ colonna di $B$.
 	Infatti, i passi per la costruzione della matrice sono:
 	\begin{enumerate}
 		\item $\sigma = \| x \|_2$
-		\item $k = -sgn(x) \cdot \sigma$
+		\item $k = -\sgn(x) \cdot \sigma$
 		\item $\beta = \sigma (\sigma + | x_1 |)$
 		\item $v = x - k \cdot e_1$
 		\item $H = I - \frac{1}{\beta}v v^T $

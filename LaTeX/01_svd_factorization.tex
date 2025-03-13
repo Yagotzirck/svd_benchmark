@@ -3,7 +3,7 @@
 \section{SVD standard}
 Data una qualunque matrice
 \begin{equation*}  
-A \in \mathbb{C}^{m \times n},\quad k = rank(A)
+A \in \mathbb{C}^{m \times n},\quad k = \rank(A)
 \end{equation*}
 è sempre possibile effettuarne una fattorizzazione SVD che consente di scomporla 
 in tre matrici $U, \Sigma, V$:
@@ -121,12 +121,12 @@ Per le ragioni esplicate sopra, data una matrice $A \in \mathbb{C}^{m \times
 n}$, nella pratica viene eseguita una fattorizzazione SVD simile alla SVD 
 compatta \eqref{SVD_compact}, ma con la differenza che al posto di
 \begin{equation*}
-k = rank(A)
+k = \rank(A)
 \end{equation*}
 
 Si pone invece
 \begin{equation*}
-k = min(m,n) \geq rank(A)
+k = \min(m,n) \geq \rank(A)
 \end{equation*}
 
 Questo perchè il rango per righe di una matrice è uguale al suo rango per 
