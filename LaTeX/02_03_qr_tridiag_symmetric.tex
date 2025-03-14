@@ -4,12 +4,14 @@ calcolarne autovalori ed autovettori tramite l'algoritmo QR.
 
 Nella sua forma base, l'algoritmo QR è rappresentabile nel seguente modo:
 
+\vspace{10pt}
+\begin{minipage}[c][0.3\textheight][t]{0.34\textwidth}
 \begin{programma}
 function [A,U] = eig_qr(A)
 n = size(A,1);
 U = eye(n);
 
-while A ~= triu(A)
+while ~istriu(A)
 	[Q,R] = qr(A);
 	A = R * Q;
 	U = U * Q;
@@ -17,18 +19,35 @@ end
 
 end
 \end{programma}
+\end{minipage}
+\hfill
+\fbox{
+\begin{minipage}[c][0.175\textheight][t]{0.60\textwidth}
+\footnotesize
+La condizione esecutiva del ciclo while è una semplificazione a scopo 
+descrittivo; in un'implementazione reale, bisognerebbe implementare una funzione 
+\texttt{istriu2(A, tau)} che restituisce
+\begin{itemize}
+	\item \texttt{true}, se il valore assoluto di tutti gli elementi sotto la 
+	diagonale di \texttt{A} è inferiore alla soglia desiderata \texttt{tau};
+
+	\item \texttt{false} altrimenti.
+\end{itemize}
+\end{minipage}
+}
+
 
 Invocando quindi l'algoritmo nel seguente modo:
 \begin{programma}
 	[T,X] = eig_qr(A);
 \end{programma}
-Se l'algoritmo converge, restituirà due matrici $T,X$ con le quali è possibile 
+se l'algoritmo converge, restituirà due matrici $T,X$ con le quali è possibile 
 ricostruire la \textbf{forma di Schur} di $A$:
 \begin{equation*}
-	T = X^* A X
+	T = X^* A X \,,
 \end{equation*}
+dove $X$ è matrice unitaria e $T$ è matrice triangolare superiore. 
 
-Dove $X$ è matrice unitaria e $T$ è matrice triangolare superiore. 
 \subsection{$A = A^* \Rightarrow $ Fattorizzazione spettrale}
 Inoltre, se $A$ è Hermitiana, si può verificare facilmente che anche $T$ lo è, 
 ma la combinazione delle proprietà di matrice Hermitiana e triangolare superiore 
@@ -36,7 +55,7 @@ implica che $T$ sia una matrice diagonale con elementi reali sulla diagonale,
 che a sua volta implica che le matrici $T,X$ forniscono la 
 \textbf{fattorizzazione spettrale} di $A$:
 \begin{equation*}
-	A = X T X^*
+	A = X T X^* \,.
 \end{equation*}
 
 Ovvero:
@@ -89,16 +108,20 @@ presente nel file eig\_tridiag.m;
 
 \subsubsection{Spectral shift}
 Al fine di far convergere $C$ ad una matrice diagonale, è sufficiente verificare 
-che ad ogni iterazione $i = n-1 \cdots 2$ l'elemento nella sottodiagonale 
-$c_{i,i-1}$ sia inferiore ad una soglia prefissata $\tau$; se lo è, si procede 
-ad analizzare il successivo elemento sottodiagonale, altrimenti si ripete il 
-numero d'iterazioni dell'algoritmo QR necessarie affinchè $c_{i,i-1} < \tau$.
+che ad ogni iterazione $i = n-1, \ldots, 2$ il valore assoluto dell'elemento 
+nella sottodiagonale $c_{i,i-1}$ sia inferiore ad una soglia prefissata $\tau$; 
+se lo è, si procede ad analizzare il successivo elemento sottodiagonale, 
+altrimenti si ripete il numero d'iterazioni dell'algoritmo QR necessarie 
+affinchè $|c_{i,i-1}| < \tau$.
+
 
 Inoltre, la teoria ci dice che la velocità di convergenza a 0 di ogni elemento 
-sottodiagonale $c_{i,i-1}$ in relazione al numero di iterazioni $k$ è data dalla 
-$k$-esima potenza del rapporto tra autovalori adiacenti:
+sottodiagonale $c_{i,i-1}$ in relazione al numero di iterazioni $k$ è 
+direttamente proporzionale alla velocità di convergenza a 0 della $k$-esima 
+potenza del rapporto tra autovalori adiacenti:
+
 \begin{equation*}
-	\left( \frac{\lambda_{i+1}}{\lambda_i} \right)^k
+	\left( \frac{\lambda_{i+1}}{\lambda_i} \right)^k \,.
 \end{equation*}
 
 \textcolor{red}{
@@ -108,11 +131,11 @@ hanno autovalori di modulo uguale ma di segno opposto (oppure un autovalore è
 complesso coniugato dell'altro), ma dal momento che $C$ è (semi)definita 
 positiva, si ha che
 \begin{equation*}
-	\lambda_i \geq 0 \wedge \lambda_i \in \mathbb{R}, \quad i = 1 \cdots n 
+	\lambda_i \geq 0 \wedge \lambda_i \in \mathbb{R}, \quad i = 1, \ldots, n \,,
 \end{equation*}
-Il che implica che
+il che implica che
 \begin{equation*}
-	|\lambda_{i+1}| = |\lambda_i| \Rightarrow \lambda_{i+1} = \lambda_i
+	|\lambda_{i+1}| = |\lambda_i| \Rightarrow \lambda_{i+1} = \lambda_i \,.
 \end{equation*}
 }
 
@@ -122,14 +145,14 @@ e denominatore affinchè $c_{i,i-1}$ converga a zero più velocemente, tramite u
 approssimazione di $\lambda_{i+1}$:
 \begin{equation*}
 	\left( \frac{\lambda_{i+1} - \tau_k}{\lambda_i - \tau_k} \right)^k \ll \left( 
-\frac{\lambda_{i+1}}{\lambda_i} \right)^k
+\frac{\lambda_{i+1}}{\lambda_i} \right)^k \,.
 \end{equation*}
 
 L'algoritmo QR diventa quindi:
 \begin{align*}
-&for \; k=0,1,\cdots \\
-&	[Q_k, R_k] = qr(A^{(k)} - \tau_k \cdot I) \\
-&	A^{(k+1)} = Q_k \cdot R_k + \tau_k \cdot I \\
+&\text{for} \; k=0,1,\ldots \\
+&\qquad [Q_k, R_k] = \text{qr}(A^{(k)} - \tau_k \cdot I) \\
+&\qquad A^{(k+1)} = Q_k \cdot R_k + \tau_k \cdot I \\
 \end{align*}
 
 Tale tecnica prende il nome di \textbf{Rayleigh quotient shift}, e sebbene sia 
@@ -142,14 +165,14 @@ traslazione più sofisticata come il \textbf{Wilkinson shift})}.
 Ciò funziona in quanto si può verificare facilmente che la relazione di 
 similitudine tra la successione di matrici resta valida:
 \begin{equation*}
-	A^{(k+1)} \sim A ^{k}, \quad k=0,1,\cdots
+	A^{(k+1)} \sim A ^{k}, \quad k=0,1,\ldots
 \end{equation*}
 
 \subsubsection{Deflazione}
 Una volta azzerato l'elemento sottodiagonale $c_{i,i-1}$, si ha che
 \begin{itemize}
-	\item $c_{ii} = \lambda_n$;
-	\item $\underline{u}_i$ è l'autovettore associato a $\lambda_n$.
+	\item $c_{ii} = \lambda_i$;
+	\item $\underline{u}_i$ è l'autovettore associato a $\lambda_i$.
 \end{itemize}
 
 Dal momento che l'i-esimo autovalore ed autovettore si sono stabilizzati, 

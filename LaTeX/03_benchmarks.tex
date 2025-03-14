@@ -1,6 +1,6 @@
 \chapter{Valutazione dell'algoritmo}
 In questo capitolo esamineremo la bontà dell'algoritmo implementato, 
-confrontandolo con l'implementazione della funzione svd() presente nella 
+confrontandolo con l'implementazione della funzione \texttt{svd()} presente nella 
 libreria standard di MATLAB.
 
 Verranno eseguiti i seguenti tipi di test:
@@ -33,14 +33,14 @@ ed uno step di 50 da una matrice all'altra.
 La misura della precisione è basata sul fatto che in linea teorica, i vettori 
 singolari dovrebbero essere ortonormali tra di loro, il che implica che
 \begin{gather*}
-	U^T U = I \\
-	V^T V = I
+	U^T U = I \,, \\
+	V^T V = I \,.
 \end{gather*}
 
 Una stima dell'errore può essere quindi ricavata da
 \begin{gather*}
-	\| \mathbf{U^T U - I} \|_\infty \\
-	\| \mathbf{V^T V - I} \|_\infty
+	\| U^T U - I \|_\infty \,, \\
+	\| V^T V - I \|_\infty \,.
 \end{gather*}
 
 I risultati sono stati i seguenti:
@@ -57,15 +57,15 @@ I risultati sono stati i seguenti:
 \endminipage
 \end{figure}
 
-Possiamo osservare come \textit{svd\_custom()} abbia precisione leggermente 
-inferiore rispetto a \textit{svd()}, ma con risultati comunque molto buoni, con 
+Possiamo osservare come \texttt{svd\_custom()} abbia precisione leggermente 
+inferiore rispetto a \texttt{svd()}, ma con risultati comunque molto buoni, con 
 un errore che si tiene al di sotto di $10^{-13}$ per tutte le matrici $U,V$, 
 anche con $n$ relativamente grande.
 
-Per quanto riguarda i tempi di esecuzione, \textit{svd\_custom()} termina in un 
+Per quanto riguarda i tempi di esecuzione, \texttt{svd\_custom()} termina in un 
 tempo che si aggira tra uno e due ordini di grandezza superiore rispetto a 
-\textit{svd()} (3.13 secondi contro 0.03 secondi, per $n = 800$); nonostante non 
-si tratti di un confronto alla pari dal momento che \textit{svd()} è una 
+\texttt{svd()} (3.13 secondi contro 0.03 secondi, per $n = 800$); nonostante non 
+si tratti di un confronto alla pari dal momento che \texttt{svd()} è una 
 funzione compilata nativamente e non implementata come script MATLAB, il 
 risultato ci fornisce comunque una stima sull'intrinseca inefficienza della 
 fattorizzazione SVD ottenuta tramite il metodo degli autovalori di
@@ -106,6 +106,13 @@ unitario già a partire da $n = 6$ (che è un errore considerevole, in quanto
 significa che l'ortonormalità tra i vettori colonna di $V$ è stata completamente 
 persa).
 
+Ciò è attribuibile al fatto che al crescere di $n$ i valori singolari di $A$ 
+diventano sempre più piccoli e quindi l'accuratezza dei valori calcolati 
+decresce rapidamente; a peggiorare la situazione ci sta il fatto che 
+\texttt{svd\_custom()} lavora sulla matrice $A A^T$, con
+$\kappa_2(A A^T) = (\kappa_2(A))^2$, ma esamineremo meglio quest'aspetto 
+nella \autoref{sec:sigmas_relative_errors}.
+
 Non si notano invece differenze sostanziali nei tempi di calcolo rispetto ai 
 test svolti sulle matrici ortogonali (i tempi per $n = 100$ risultano essere 
 pressochè identici in entrambi i casi).
@@ -132,28 +139,29 @@ Hilbert, ma con gli errori in $V$ che presentano valori più alti.
 Ciò è dovuto al fatto che gli errori in $V$ per la matrice di Hilbert sono 
 quantitativamente mitigati dal fatto che
 \begin{equation*}
-	\lim_{n \to \infty} \max(hilb(n)(:)) = 1
+	\lim_{n \to \infty} \max(\text{hilb(n)(:)}) = 1
 \end{equation*}
 
 Mentre per la matrice di Pascal si ha che
 \begin{equation*}
-	\lim_{n \to \infty} \max(pascal(n)(:)) = +\infty
+	\lim_{n \to \infty} \max(\text{pascal(n)(:)}) = +\infty
 \end{equation*}
 
-In altri termini, i valori singolari della matrice di Hilbert tendono ad andare 
-in \textbf{underflow}; viceversa, i valori singolari della matrice di Pascal 
-tendono ad andare in \textbf{overflow}.
-
+Quindi, quando ricaviamo $V = A^T U \Sigma_{k}^{-1}$, i valori alti degli 
+elementi in $A$ faranno sì che la $V$ ottenuta da una matrice di Pascal abbia un 
+errore quantitativamente maggiore rispetto alla $V$ ottenuta da una matrice di 
+Hilbert di pari dimensioni.
 
 Tuttavia, al di là dell'errore quantitativo, in entrambi i casi i vettori della 
 matrice $V$ perdono completamente la loro ortonormalità.
 
 Inoltre, rispetto ai tempi osservati per la matrice di Hilbert, i tempi di 
-calcolo per \textit{svd\_custom()} risultano essere di un ordine di grandezza 
-più alti, mentre per \textit{svd()} si mantengono relativamente stabili.
+calcolo per \texttt{svd\_custom()} risultano essere di un ordine di grandezza 
+più alti, mentre per \texttt{svd()} si mantengono relativamente stabili.
 
 \newpage
 \section{Errori relativi sui valori singolari}
+\label{sec:sigmas_relative_errors}
 In questo tipo di test seguiremo un approccio differente: effettueremo 4 test, 
 in cui verrà usata una matrice $A \in \mathbb{R}^{17 \times 17}$ costruita a 
 partire da due matrici ortogonali $U, V$ ed una matrice $\Sigma_k$ contenente 17 
@@ -172,10 +180,10 @@ in norma 2 di $A$ siano i seguenti per ogni test:
 
 Per ogni matrice costruiremo quindi un grafico avente sull'asse delle ascisse i 
 valori singolari esatti $\sigma_i$, e sull'asse delle ordinate l'errore relativo 
-del valore $\hat{\sigma}_i$ ottenuto dalle due funzioni \textit{svd()} e 
-\textit{svd\_custom()}, calcolato come
+del valore $\hat{\sigma}_i$ ottenuto dalle due funzioni \texttt{svd()} e 
+\texttt{svd\_custom()}, calcolato come
 \begin{equation*}
-	\left\| \frac{\sigma_i - \hat{\sigma}_i}{\sigma_i} \right\|
+	\left| \frac{\sigma_i - \hat{\sigma}_i}{\sigma_i} \right|
 \end{equation*}
 
 I risultati sono stati i seguenti:
@@ -201,7 +209,7 @@ I risultati sono stati i seguenti:
 
 Le discontinuità riscontrate in alcuni punti sono dovute ad errori relativi 
 esattamente uguali a 0, e lo 0 esatto non è rappresentabile nei grafici di 
-MATLAB con scala logaritmica generati con la funzione \textit{loglog()}.
+MATLAB con scala logaritmica generati con la funzione \texttt{loglog()}.
 
 Ciò che possiamo osservare è che per entrambe le funzioni, il valore singolare 
 più piccolo tende ad essere quello che risente maggiormente del condizionamento 
@@ -211,10 +219,10 @@ relativo sembra invece annullarsi.
 Inoltre, prendendo come riferimento il valore singolare più piccolo $\sigma_n$ 
 ed il numero di condizionamento pari a $10^k$, possiamo osservare che
 \begin{itemize}
-\item Per \textit{svd()}, si ha che $\left\| \frac{\sigma_n - 
-\hat{\sigma}_n}{\sigma_n} \right\| \approx 10^{16 - k}$;
-\item Per \textit{svd\_custom()}, si ha che $\left\| \frac{\sigma_n - 
-\hat{\sigma}_n}{\sigma_n} \right\| \approx 10^{16 - k^2}$
+\item Per \texttt{svd()}, si ha che $\left| \frac{\sigma_n - 
+\hat{\sigma}_n}{\sigma_n} \right| \approx 10^{16 - k}$;
+\item Per \texttt{svd\_custom()}, si ha che $\left| \frac{\sigma_n - 
+\hat{\sigma}_n}{\sigma_n} \right| \approx 10^{16 - 2k}$
 \end{itemize}
 
 Ciò è dovuto al fatto che l'algoritmo implementato lavora su $B = A A^T$ (oppure 
@@ -256,17 +264,19 @@ colonna di $B$.
 		\item $H = I - \frac{1}{\beta}v v^T $
 	\end{enumerate}
 	
-	Al passo (c) viene calcolato un \textbf{quadrato della norma di un vettore} di 
-$B$, ed al passo (e) viene usato tale valore come divisore per gli elementi 
-della matrice risultante da un \textbf{outer product} (altro "elevamento a 
-quadrato" degli elementi di un vettore di $B$).
+Al passo (c) viene calcolato un \textbf{quadrato della norma di un vettore 
+colonna ridotto} di $B$, ed al passo (e) viene usato tale valore come divisore 
+per gli elementi della matrice risultante da un \textbf{outer product} (altro 
+"elevamento a quadrato" degli elementi di un vettore ridotto di $B$).
+
+
 \end{enumerate}
 
 Se $A$ possiede degli elementi $|a_{ij}| \geq \sqrt[4]{v_{max}}$ \textit{(e li 
 ha quasi sicuramente, se possiede uno o più valori singolari $\sigma_i \geq 
 \sqrt[4]{v_{max}}$)}, al passo (e) vengono effettuate delle divisioni 
 $\frac{\infty}{\infty}$, che portano ad avere una matrice con valori 
-\textit{NaN}.
+\texttt{NaN}.
 
 
 

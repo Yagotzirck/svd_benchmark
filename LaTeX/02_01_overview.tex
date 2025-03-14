@@ -1,29 +1,29 @@
 \section{Panoramica generale}
-Data una matrice $A$ con l'associata matrice degli autovettori $X$ e la matrice 
-diagonale degli autovalori $\Lambda$, vale la relazione
+Data una matrice quadrata $A$ con l'associata matrice degli autovettori $X$ e la 
+matrice diagonale degli autovalori $\Lambda$, vale la relazione:
 \begin{equation}\label{eval_evec_relationship}
-A X = X \Lambda
+A X = X \Lambda \,.
 \end{equation}
 
 Rifacendoci alla forma compatta della fattorizzazione SVD in 
 \eqref{SVD_compact}, si ha che
 \begin{equation*}
-	U_{1}^T U_1 = I_k
+	U_{1}^T U_1 = I_k \,,
 \end{equation*}
 \begin{equation*}
-	V_{1}^T V_1 = I_k
+	V_{1}^T V_1 = I_k \,.
 \end{equation*}
 
 
 Valgono quindi le seguenti due uguaglianze, entrambe derivate dalla forma 
-compatta (la prima è ottenuta moltiplicando ambo i lati a destra per $V_1$, 
-mentre per la seconda bisogna prima trasporre ambo i lati dell'equazione per poi 
-moltiplicarli a destra per $U_1$):
+compatta (la prima è ottenuta moltiplicando ambo i membri a destra per $V_1$, 
+mentre per la seconda bisogna prima trasporre ambo i membri dell'equazione per 
+poi moltiplicarli a destra per $U_1$):
 \begin{equation}\label{AV_eq_US}
-	A V_1 = U_1 \Sigma_k
+	A V_1 = U_1 \Sigma_k \,,
 \end{equation}
 \begin{equation}\label{AtU_eq_VS}
-	A^T U_1 = V_1 \Sigma_k
+	A^T U_1 = V_1 \Sigma_k \,.
 \end{equation}
 
 
@@ -35,7 +35,7 @@ Consideriamo la \eqref{AV_eq_US} e moltiplichiamola a sinistra per $A^T$:
 	A^T A V_1 &= \textcolor{red}{A^T U_1} \Sigma_k \Rightarrow \\
 	A^T A V_1 &= \textcolor{red}{V_1 \Sigma_k} \Sigma_k \Rightarrow \quad 
 \text{(vedi \eqref{AtU_eq_VS}}) \\
-	A^T A V_1 &= V_1 \Sigma_{k}^2
+	A^T A V_1 &= V_1 \Sigma_{k}^2 \,.
 \end{align*}
 \end{flushleft}
 
@@ -57,7 +57,7 @@ Consideriamo ora la \eqref{AtU_eq_VS} e moltiplichiamola a sinistra per $A$:
 	A A^T U_1 &= \textcolor{red}{A V_1} \Sigma_k \Rightarrow \\
 	A A^T U_1 &= \textcolor{red}{U_1 \Sigma_k} \Sigma_k \Rightarrow \quad 
 \text{(vedi \eqref{AV_eq_US}}) \\
-	A A^T U_1 &= U_1 \Sigma_{k}^2
+	A A^T U_1 &= U_1 \Sigma_{k}^2 \,.
 \end{align*}
 \end{flushleft}
 
@@ -77,10 +77,10 @@ singolari tra $U_1$ e $V_1$ e la matrice dei valori singolari $\Sigma_k$,
 possiamo facilmente ricavare l'altra matrice dei vettori singolari partendo 
 dalla \eqref{SVD_compact}:
 \begin{equation*}
-	U_1 = A V_1 \Sigma_{k}^{-1}
+	U_1 = A V_1 \Sigma_{k}^{-1} \,,
 \end{equation*}
 \begin{equation*}
-	V_1 = A^T U_1 \Sigma_{k}^{-1}
+	V_1 = A^T U_1 \Sigma_{k}^{-1} \,.
 \end{equation*}
 
 Per quanto riguarda la scelta della matrice dei vettori singolari da calcolare 
@@ -99,16 +99,18 @@ per ricavare $U$ e $V$ in maniera indipendente, ma ciò presenta i seguenti
 problemi:
 \begin{enumerate}
 	\item \textbf{Incremento della complessità}: \textbf{Col primo approccio}, si 
-esegue l'algoritmo QR una sola volta e si ricava l'altra matrice dei vettori 
-singolari effettuando $k^2$ divisioni (ogni colonna $\underline{u}_i$ o 
-$\underline{v}_i$ viene divisa per il corrispondente $\sigma_i, i = 1 \cdots k$) 
-a cui segue un prodotto con la matrice $A$, mentre \textbf{col secondo 
-approccio} si esegue due volte l'algorimo QR (che essendo un algoritmo 
-iterativo, ha complessità maggiore rispetto al prodotto matrice-vettore o al 
-prodotto matrice-matrice); inoltre, ci si riconduce ad un calcolo di \textbf{SVD 
-standard}, in cui (a meno che $A$ non sia quadrata a rango pieno) molti vettori 
-colonna sarebbero superflui al fine di ricavare $A$;
-	
+esegue un prodotto matriciale e l'algoritmo QR una sola volta, e si ricava 
+l'altra matrice dei vettori singolari effettuando $k^2$ divisioni (ogni colonna 
+$\underline{u}_i$ o $\underline{v}_i$ viene divisa per il corrispondente 
+$\sigma_i, i = 1, \ldots, k$) a cui segue un prodotto con la matrice $A$, mentre 
+\textbf{col secondo approccio} viene eseguito due volte sia un prodotto matriciale, 
+sia l'algorimo QR (che essendo un algoritmo iterativo, ha complessità maggiore 
+rispetto al prodotto matrice-vettore o al prodotto matrice-matrice);
+inoltre, ci si riconduce ad un calcolo di \textbf{SVD standard}, in cui (a meno 
+che $A$ non sia quadrata a rango pieno) molti vettori colonna sarebbero 
+superflui al fine di ricavare $A$;
+
+
 	\item \textbf{Sign indeterminacy}: Dal momento che gli autovettori calcolati 
 con l'algoritmo QR possono convergere in maniera non determinabile sia ad un 
 determinato segno / direzione, sia alla direzione opposta, se si calcolano $U,V$ 
@@ -119,16 +121,18 @@ rango 1
 \sigma_i \cdot \underline{u}_i \cdot \underline{v}_{i}^T
 \end{equation*}
 contenga elementi di segno opposto a quello che dovrebbero avere al fine di 
-ricostruire $A$ nella sua rappresentazione SVD come outer product.
+ricostruire $A$ nella sua rappresentazione SVD come sommatoria di 
+outer products.
+
 
 Per risolvere il problema, si potrebbe ad esempio partire dall'uguaglianza $A V 
-= U \Sigma$, e tenendo a mente che $\sigma_i \in \mathbb{R}^+, i = 1 \cdots k$ e 
+= U \Sigma$, e tenendo a mente che $\sigma_i \in \mathbb{R}^+, i = 1, \ldots, k$ e 
 che ai fini della verifica del segno è sufficiente verificare l'uguaglianza dei 
-segni per gli elementi di una sola riga in ambo i lati dell'equazione, si può 
+segni per gli elementi di una sola riga in ambo i membri dell'equazione, si può 
 semplificare l'espressione per sistemare i segni dei vettori colonna in modo che 
 siano congrui al fine di ricostruire $A$ nel seguente modo:
 \begin{equation*}
-	\sgn(A_{1}^T \cdot \underline{v}_j) = \sgn(u_{1j}), \quad j = 1 \cdots n
+	\sgn(A_{1}^T \cdot \underline{v}_j) = \sgn(u_{1j}), \quad j = 1, \ldots, n \,,
 \end{equation*}
  ma ciò comporta in ogni caso un ulteriore incremento del costo computazionale 
 dell'ordine di $O(n^2)$ (occorre effettuare $n$ prodotti scalari a sinistra 

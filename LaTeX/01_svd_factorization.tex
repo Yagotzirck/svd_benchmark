@@ -3,12 +3,12 @@
 \section{SVD standard}
 Data una qualunque matrice
 \begin{equation*}  
-A \in \mathbb{C}^{m \times n},\quad k = \rank(A)
+A \in \mathbb{C}^{m \times n},\quad k = \rank(A) \,,
 \end{equation*}
 è sempre possibile effettuarne una fattorizzazione SVD che consente di scomporla 
 in tre matrici $U, \Sigma, V$:
 \begin{equation}\label{SVD_standard}
-A = U \Sigma V^*
+A = U \Sigma V^* \,,
 \end{equation}
 dove
 \begin{itemize}
@@ -32,13 +32,11 @@ Tale fattorizzazione è chiamata \textbf{fattorizzazione SVD piena / standard}.
 Si osservi che al fine di ricostruire $A$, solo i primi $k$ vettori singolari 
 sinistri e destri sono necessari; i restanti vettori
 \begin{equation*}
-	\underline{u}_{i} \in U, i = k+1 \cdots m
-\end{equation*}  
-
-\begin{equation*}
-	\underline{v}_{i} \in V, i = k+1 \cdots n
+	\underline{u}_{i} \in U, \quad i = k+1, \ldots, m \,,
 \end{equation*}
-
+\begin{equation*}
+	\underline{v}_{i} \in V, \quad i = k+1, \ldots, n \,,
+\end{equation*}
 sono vettori creati artificialmente al fine di ottenere due matrici ortogonali 
 (o unitarie, se $A \in \mathbb{C}^{m \times m}$), creandoli in maniera casuale 
 per poi ortonormalizzarli rispetto ai restanti vettori con un algoritmo come 
@@ -63,7 +61,7 @@ U_{1} = \begin{bmatrix}
 \underline{u}_1 & \underline{u}_2 & \cdots & \underline{u}_k
 \end{bmatrix}
 \in \mathbb{C}^{m \times k},
-\quad U^*U = I_k
+\quad U^*U = I_k \,,
 \end{equation*}
 
 \begin{equation*}  
@@ -73,7 +71,7 @@ U_{1} = \begin{bmatrix}
 & & \ddots & \\
 & & & \sigma_k
 \end{bmatrix} \in \mathbb{R}^{k \times k},
-\quad \sigma_i \in \mathbb{R} \wedge \sigma_i > 0, \quad i = 1 \cdots k
+\quad \sigma_1 \geq \sigma_2 \geq \ldots \sigma_k > 0 \,,
 \end{equation*}
 
 \begin{equation*}  
@@ -81,15 +79,13 @@ V_{1} = \begin{bmatrix}
 \underline{v}_1 & \underline{v}_2 & \cdots & \underline{v}_k
 \end{bmatrix}
 \in \mathbb{C}^{n \times k},
-\quad V^*V = I_k
+\quad V^*V = I_k \,,
 \end{equation*}
-
-otteniamo la \textbf{fattorizzazione SVD compatta} di $A$:
+otteniamo la \textbf{fattorizzazione SVD compatta} di $A$
 \begin{equation}\label{SVD_compact}
-A = U_1 \Sigma_k {V_1}^*
+A = U_1 \Sigma_k {V_1}^* \,,
 \end{equation}
-
-Chiamata anche \textbf{full-rank SVD} in quanto tutt'e tre le matrici hanno 
+chiamata anche \textbf{full-rank SVD} in quanto tutt'e tre le matrici hanno 
 rango pieno k (\textit{$U_1$ e $V_1$ sono a rango pieno di colonna, mentre 
 $\Sigma_k$ è quadrata a rango pieno}).
 
@@ -121,19 +117,18 @@ Per le ragioni esplicate sopra, data una matrice $A \in \mathbb{C}^{m \times
 n}$, nella pratica viene eseguita una fattorizzazione SVD simile alla SVD 
 compatta \eqref{SVD_compact}, ma con la differenza che al posto di
 \begin{equation*}
-k = \rank(A)
+k = \rank(A) \,,
 \end{equation*}
-
-Si pone invece
+si pone invece
 \begin{equation*}
-k = \min(m,n) \geq \rank(A)
+k = \min(m,n) \geq \rank(A) \,.
 \end{equation*}
 
 Questo perchè il rango per righe di una matrice è uguale al suo rango per 
 colonne, e di conseguenza è limitato superiormente dal minimo valore tra i due 
-(numero di righe se la matrice è grassa, numero di colonne se la matrice è 
-alta).
+(numero di righe se la matrice è sottodeterminata, numero di colonne se la 
+matrice è sovradeterminata).
 
 Tale fattorizzazione prende il nome di \textbf{Economy-sized SVD}, usata ad es. 
-dalla funzione \textit{svd()} di MATLAB se viene specificato il parametro 
-\textit{'econ'}.
+dalla funzione \texttt{svd()} di MATLAB se viene specificato il parametro 
+\texttt{'econ'}.

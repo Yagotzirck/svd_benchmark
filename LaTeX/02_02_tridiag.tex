@@ -41,17 +41,18 @@ H_i \cdot \underline{b}_{i}^{(i)} =
 	\textcolor{red}{\vdots} \\ 
 	\textcolor{red}{0}
 \end{bmatrix}
+\,.
 \end{equation}
 
 Invece di limitarcisi all'operazione $B^{(i+1)} = H_i \cdot B^{(i)}$ come nella 
 fattorizzazione QR, occorre effettuare la trasformazione di similitudine
 \begin{equation*}
-B^{(i+1)} = H_i \cdot B^{(i)} \cdot H_{i}^T
+B^{(i+1)} = H_i \cdot B^{(i)} \cdot H_{i}^T \,,
 \end{equation*}
 che, dal momento che la matrice elementare di Householder è simmetrica, si può 
 semplificare come
 \begin{equation}\label{hess_similarity_iteration}
-B^{(i+1)} = H_i \cdot B^{(i)} \cdot H_{i}
+B^{(i+1)} = H_i \cdot B^{(i)} \cdot H_{i} \,.
 \end{equation}
 
 Dal momento che $H_i$ è in realtà una matrice orlata, ovvero una matrice 
@@ -84,8 +85,9 @@ end
 La funzione restituisce, oltre alla matrice di Hessenberg $C$, anche la matrice 
 $H$ delle inversioni di Householder accumulate, tale che
 \begin{equation}\label{B_C_similarity}
-H C H^T = B
+H C H^T = B \,.
 \end{equation}
+
 Tale relazione tornerà utile più avanti.
 
 \subsection{$C$ è matrice tridiagonale}
@@ -107,6 +109,7 @@ dell'i-esima colonna):
 	\textcolor{red}{\cdots} &
 	\textcolor{red}{0}
 \end{bmatrix}
+\,.
 \end{equation*}
 
 Ciò implica che alla fine della trasformazione, $C$ non è solo in forma di 
@@ -133,7 +136,7 @@ effettuare direttamente la moltiplicazione per le componenti di $H$:
 \noindent	
 \fbox{
 \begin{minipage}[t]{0.45\textwidth}
-	\centering \textbf{$H \cdot A$} \\
+	\centering $\mathbf{H \cdot A}$ \\
 	\vspace{-20pt}
 	\begin{align*}
 	&H \cdot A = \\
@@ -146,7 +149,7 @@ effettuare direttamente la moltiplicazione per le componenti di $H$:
 \hfill
 \fbox{
 \begin{minipage}[t]{0.45\textwidth}
-	\centering \textbf{$A \cdot H$} \\
+	\centering $\mathbf{A \cdot H}$ \\
 	\vspace{-20pt}
 	\begin{align*}
 	&A \cdot H = \\

@@ -27,8 +27,9 @@ che $U \Sigma V^T = A$: ad esempio, i valori singolari ricavati da $A A^T$
 potrebbero non essere congrui con quelli ricavati da $A^T A$.
 	
 	Inoltre, dato che $\kappa_2(B) = (\kappa_2(A))^2$, l'errore assoluto dei valori 
-singolari calcolati rispetto ai valori singolari corretti risulta essere elevato 
-al quadrato;
+singolari calcolati risulta essere elevato al quadrato rispetto all'errore
+assoluto dei valori singolari calcolati con \texttt{svd()}, che lavora
+direttamente su $A$;
 	
 	\item \textbf{Overflow e underflow}: Con matrici aventi valori singolari molto 
 grandi e/o prossimi allo zero, il calcolo di tali valori potrebbe andare 
