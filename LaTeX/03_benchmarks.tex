@@ -45,18 +45,16 @@ Una stima dell'errore può essere quindi ricavata da
 
 I risultati sono stati i seguenti:
 
-\begin{figure}[!htb]
-\minipage{0.32\textwidth}
-\includegraphics[width=\linewidth]{imgs/01_-_U_precision_results_for_orthogonal_matrices.eps}
-\endminipage\hfill
-\minipage{0.32\textwidth}  
-\includegraphics[width=\linewidth]{imgs/02_-_V_precision_results_for_orthogonal_matrices.eps}
-\endminipage\hfill
-\minipage{0.32\textwidth}  
-\includegraphics[width=\linewidth]{imgs/03_-_Performance_results_for_orthogonal_matrices.eps}
-\endminipage
-\end{figure}
+\centering
+\par \vspace{15pt}
+\includegraphics[scale=.9]{imgs/01_-_U_precision_results_for_orthogonal_matrices.eps}
+\newpage
+\includegraphics[scale=.9]{imgs/02_-_V_precision_results_for_orthogonal_matrices.eps}
+\par \vspace{15pt}
+\includegraphics[scale=.9]{imgs/03_-_Performance_results_for_orthogonal_matrices.eps}
+\newpage
 
+\raggedright % Restore default alignment
 Possiamo osservare come \texttt{svd\_custom()} abbia precisione leggermente 
 inferiore rispetto a \texttt{svd()}, ma con risultati comunque molto buoni, con 
 un errore che si tiene al di sotto di $10^{-13}$ per tutte le matrici $U,V$, 
@@ -85,20 +83,17 @@ malcondizionate:
 Faremo variare $n$ all'interno di un intervallo più piccolo del precedente ($[2, 
 100]$), con uno step unitario tra una matrice e la successiva.
 
+\newpage
 \subsection{Matrice di Hilbert}
+\centering
+\includegraphics[scale=.9]{imgs/04_-_U_precision_results_for_Hilbert_matrices.eps}
+\par \vspace{15pt}
+\includegraphics[scale=.9]{imgs/05_-_V_precision_results_for_Hilbert_matrices.eps}
+\newpage
+\includegraphics[scale=.9]{imgs/06_-_Performance_results_for_Hilbert_matrices.eps}
+\par \vspace{15pt}
 
-\begin{figure}[!htb]
-\minipage{0.32\textwidth}
-\includegraphics[width=\linewidth]{imgs/04_-_U_precision_results_for_Hilbert_matrices.eps}
-\endminipage\hfill
-\minipage{0.32\textwidth}  
-\includegraphics[width=\linewidth]{imgs/05_-_V_precision_results_for_Hilbert_matrices.eps}
-\endminipage\hfill
-\minipage{0.32\textwidth}  
-\includegraphics[width=\linewidth]{imgs/06_-_Performance_results_for_Hilbert_matrices.eps}
-\endminipage
-\end{figure}
-
+\raggedright % Restore default alignment
 In questo caso, la precisione di $U$ (derivata dall'algoritmo QR) continua ad 
 essere più che buona, mentre $V$ (calcolata come $V = A^T U \Sigma_{k}^{-1}$) 
 risente pesantemente del malcondizionamento di $A$, arrivando ad avere un errore 
@@ -118,21 +113,16 @@ test svolti sulle matrici ortogonali (i tempi per $n = 100$ risultano essere
 pressochè identici in entrambi i casi).
 
 
-\newpage
 \subsection{Matrice di Pascal}
+\centering
+\includegraphics[scale=.9]{imgs/07_-_U_precision_results_for_Pascal_matrices.eps} \\
+\par \vspace{15pt}
+\includegraphics[scale=.9]{imgs/08_-_V_precision_results_for_Pascal_matrices.eps} \\
+\newpage
+\includegraphics[scale=.9]{imgs/09_-_Performance_results_for_Pascal_matrices.eps}
+\par \vspace{15pt}
 
-\begin{figure}[!htb]
-\minipage{0.32\textwidth}
-\includegraphics[width=\linewidth]{imgs/07_-_U_precision_results_for_Pascal_matrices.eps}
-\endminipage\hfill
-\minipage{0.32\textwidth}  
-\includegraphics[width=\linewidth]{imgs/08_-_V_precision_results_for_Pascal_matrices.eps}
-\endminipage\hfill
-\minipage{0.32\textwidth}  
-\includegraphics[width=\linewidth]{imgs/09_-_Performance_results_for_Pascal_matrices.eps}
-\endminipage
-\end{figure}
-
+\raggedright % Restore default alignment
 Possiamo osservare uno schema molto simile a quello riscontrato nella matrice di 
 Hilbert, ma con gli errori in $V$ che presentano valori più alti.
 
@@ -188,25 +178,16 @@ del valore $\hat{\sigma}_i$ ottenuto dalle due funzioni \texttt{svd()} e
 
 I risultati sono stati i seguenti:
 
-\begin{figure}[!htb]
-\minipage{0.45\textwidth}
-\includegraphics[width=\textwidth]{imgs/10_-_Relative_errors_for_singular_values_-_k_2(A)_=_10^2.eps}
-\endminipage\hfill
-\minipage{0.45\textwidth}  
-\includegraphics[width=\textwidth]{imgs/11_-_Relative_errors_for_singular_values_-_k_2(A)_=_10^4.eps}
-\endminipage
-\end{figure}
+\centering
+\par \vspace{15pt}
+\includegraphics[scale=.9]{imgs/10_-_Relative_errors_for_singular_values_-_k_2(A)_=_10^2.eps}
+\newpage
+\includegraphics[scale=.9]{imgs/12_-_Relative_errors_for_singular_values_-_k_2(A)_=_10^8.eps}
+\par \vspace{15pt}
+\includegraphics[scale=.9]{imgs/13_-_Relative_errors_for_singular_values_-_k_2(A)_=_10^{16}.eps}
+\newpage
 
-
-\begin{figure}[!htb]
-\minipage{0.45\textwidth}
-\includegraphics[width=\textwidth]{imgs/12_-_Relative_errors_for_singular_values_-_k_2(A)_=_10^8.eps}
-\endminipage\hfill
-\minipage{0.45\textwidth}  
-\includegraphics[width=\textwidth]{imgs/13_-_Relative_errors_for_singular_values_-_k_2(A)_=_10^{16}.eps}
-\endminipage
-\end{figure}
-
+\raggedright % Restore default alignment
 Le discontinuità riscontrate in alcuni punti sono dovute ad errori relativi 
 esattamente uguali a 0, e lo 0 esatto non è rappresentabile nei grafici di 
 MATLAB con scala logaritmica generati con la funzione \texttt{loglog()}.
@@ -234,7 +215,7 @@ piccoli tale smorzamento non avviene, portando ai risultati mostrati nei grafici
 sopra con errori relativi decrescenti al crescere di $\sigma_i$.
 
 
-
+\newpage
 \section{Overflow e underflow}
 \subsection{Overflow}
 Posto il massimo valore rappresentabile in double precision
